@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -63,6 +63,10 @@ export default function EventCarousel({ isActive = true }: { isActive?: boolean 
   const [direction, setDirection] = useState(0);
   const isScrollingRef = React.useRef(false);
 
+  // Fade out effect for the planet as user scrolls down
+  const { scrollY } = useScroll();
+  const globeOpacity = useTransform(scrollY, [0, 500], [1, 0]);
+
   const currentEvent = EVENTS[currentIndex];
 
   const paginate = (newDirection: number) => {
@@ -78,86 +82,40 @@ export default function EventCarousel({ isActive = true }: { isActive?: boolean 
   React.useEffect(() => {
     if (!isActive) return;
 
-    const handleWheel = (e: WheelEvent) => {
-      // Allow scrolling up to the hero if at the first planet
-      if (currentIndex === 0 && e.deltaY < 0) {
-        return;
-      }
-      
-      e.preventDefault();
-
-      if (isScrollingRef.current) return;
-      
-      if (e.deltaY > 50) {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        if (isScrollingRef.current) return;
         isScrollingRef.current = true;
         paginate(1);
-        setTimeout(() => { isScrollingRef.current = false; }, 1000);
-      } else if (e.deltaY < -50) {
+        setTimeout(() => { isScrollingRef.current = false; }, 500);
+      } else if (e.key === "ArrowLeft") {
+        if (isScrollingRef.current) return;
         isScrollingRef.current = true;
         paginate(-1);
-        setTimeout(() => { isScrollingRef.current = false; }, 1000);
+        setTimeout(() => { isScrollingRef.current = false; }, 500);
       }
     };
 
-    let touchStartY = 0;
-    let touchEndY = 0;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      // Prevent default to disable native scrolling/bouncing on mobile
-      e.preventDefault();
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      touchEndY = e.changedTouches[0].clientY;
-      handleSwipe();
-    };
-
-    const handleSwipe = () => {
-      if (isScrollingRef.current) return;
-      const swipeDistance = touchStartY - touchEndY;
-      
-      // Swipe up (simulate scrolling down to next slide)
-      if (swipeDistance > 50) {
-        isScrollingRef.current = true;
-        paginate(1);
-        setTimeout(() => { isScrollingRef.current = false; }, 1000);
-      } 
-      // Swipe down (simulate scrolling up to previous slide)
-      else if (swipeDistance < -50) {
-        if (currentIndex === 0) return; // Allow natural scroll if at top
-        isScrollingRef.current = true;
-        paginate(-1);
-        setTimeout(() => { isScrollingRef.current = false; }, 1000);
-      }
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: false });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("touchend", handleTouchEnd, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isActive, currentIndex]);
 
   return (
     <div 
-      className="relative h-screen w-full overflow-hidden text-white flex flex-col selection:bg-white/30 bg-transparent"
+      className="relative h-screen w-full text-white flex flex-col selection:bg-white/30 bg-transparent select-none"
       style={{ fontFamily: "var(--font-inter), sans-serif" }}
     >
       
       {/* ===== 3D PLANET CAROUSEL (Background Layer) ===== */}
-      <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
+      <motion.div 
+        style={{ opacity: globeOpacity }}
+        className="fixed inset-0 w-full h-screen z-10 pointer-events-none"
+      >
         <EventGlobe textures={textures} currentIndex={currentIndex} className="w-full h-full pointer-events-auto" />
-      </div>
+      </motion.div>
 
       {/* ===== MAIN CONTENT ===== */}
       <main className="flex-grow flex flex-col items-center justify-start pt-[14vh] md:pt-[18vh] relative z-20 px-4 pointer-events-none">

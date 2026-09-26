@@ -31,6 +31,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   // Global Audio Controller (Kawai Kitsune)
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
