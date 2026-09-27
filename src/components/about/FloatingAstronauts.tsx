@@ -42,7 +42,7 @@ export default function FloatingAstronauts() {
           x: { duration: 0.6, ease: "easeOut" },
           y: { duration: 0.6, ease: "easeOut" },
         }}
-        className="absolute left-1/2 sm:left-[3%] lg:left-[4%] xl:left-[6%] top-[10%] sm:top-[32%] lg:top-[36%] -translate-x-1/2 sm:translate-x-0 sm:-translate-y-1/2 w-[140px] sm:w-[190px] md:w-[230px] lg:w-[275px] xl:w-[315px] aspect-[1501/871]"
+        className="absolute left-1/2 sm:left-[3%] lg:left-[4%] xl:left-[6%] top-[16%] sm:top-[32%] lg:top-[36%] -translate-x-1/2 sm:translate-x-0 sm:-translate-y-1/2 w-[140px] sm:w-[190px] md:w-[230px] lg:w-[275px] xl:w-[315px] aspect-[1501/871]"
       >
         <motion.div
           animate={{
