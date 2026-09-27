@@ -1,15 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { ChevronRight, Rocket } from "lucide-react";
-import PlanetsCanvas from "@/components/home/PlanetsCanvas";
-import ConstellationsCanvas from "@/components/home/ConstellationsCanvas";
+import dynamic from "next/dynamic";
 import { useRocketTransition } from "@/components/transition/RocketTransitionContext";
+
+// Dynamically import heavy 3D canvases to prevent blocking initial page load
+const ConstellationsCanvas = dynamic(() => import("@/components/home/ConstellationsCanvas"), { ssr: false });
+// const PlanetsCanvas = dynamic(() => import("@/components/home/PlanetsCanvas"), { ssr: false });
 
 export default function Home() {
   const mouseRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  
+  // Refs for direct DOM manipulation (bypasses React 60fps re-rendering)
+  const bgRef = useRef<HTMLDivElement>(null);
+  const astro1Ref = useRef<HTMLDivElement>(null);
+  const astro2Ref = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
+
   const { triggerLaunch } = useRocketTransition();
 
   useEffect(() => {
@@ -27,21 +36,26 @@ export default function Home() {
 
     let animationFrameId: number;
     const updateParallax = () => {
-      if (window.innerWidth < 768) {
-        setOffset({ x: 0, y: 0 });
-        animationFrameId = requestAnimationFrame(updateParallax);
-        return;
+      if (window.innerWidth >= 768) {
+        const m = mouseRef.current;
+        // Lerp for ultra-smooth movement without CSS transition stutter
+        m.currentX += (m.targetX - m.currentX) * 0.08;
+        m.currentY += (m.targetY - m.currentY) * 0.08;
+
+        // Apply transforms directly to the DOM to avoid React re-renders
+        if (bgRef.current) {
+          bgRef.current.style.transform = `translate3d(${m.currentX * -12}px, ${m.currentY * -12}px, 0) scale(1.08)`;
+        }
+        if (astro1Ref.current) {
+          astro1Ref.current.style.transform = `translate3d(${m.currentX * 42}px, ${m.currentY * 42}px, 0)`;
+        }
+        if (astro2Ref.current) {
+          astro2Ref.current.style.transform = `translate3d(${m.currentX * -38}px, ${m.currentY * -38}px, 0)`;
+        }
+        if (titleRef.current) {
+          titleRef.current.style.transform = `translate3d(${m.currentX * 35}px, ${m.currentY * 35}px, 0)`;
+        }
       }
-
-      const m = mouseRef.current;
-      // Lerp for ultra-smooth movement without CSS transition stutter
-      m.currentX += (m.targetX - m.currentX) * 0.08;
-      m.currentY += (m.targetY - m.currentY) * 0.08;
-
-      setOffset({
-        x: m.currentX,
-        y: m.currentY,
-      });
 
       animationFrameId = requestAnimationFrame(updateParallax);
     };
@@ -55,131 +69,36 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="hero-bg relative w-full h-screen overflow-hidden bg-[#020712]">
-      {/* 1. Deep Space Background - Subtle smooth reverse parallax */}
-      <div
-        className="absolute -inset-12 select-none pointer-events-none"
-        style={{
-          transform: `translate3d(${offset.x * -12}px, ${offset.y * -12}px, 0) scale(1.08)`,
-        }}
-      >
-        <Image
-          src="/bg.png"
-          alt="Space Background"
-          fill
-          priority
-          unoptimized
-          className="object-cover object-center"
-        />
-      </div>
-
-
-
-      {/* 2. Midground Integrated Cloud Layer (TEMPORARILY COMMENTED OUT)
-      <div
-        className="max-md:hidden absolute inset-0 pointer-events-none mix-blend-multiply select-none z-0"
-        style={{
-          transform: `translate3d(${offset.x * 22}px, ${offset.y * 22}px, 0)`,
-        }}
-      >
-        <div className="absolute -top-[20%] left-[20%] w-[70vw] h-[60vh] transform rotate-[165deg] scale-y-[-1]">
+    <div className="w-full flex flex-col min-h-screen overflow-x-hidden bg-[#020712]">
+      
+      {/* FIXED COSMIC BACKGROUND LAYER */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* 1. Deep Space Background - Subtle smooth reverse parallax */}
+        <div
+          ref={bgRef}
+          className="absolute -inset-12 select-none"
+          style={{ transform: "translate3d(0px, 0px, 0) scale(1.08)" }}
+        >
           <Image
-            src="/cloud.png"
-            alt="Top-Left Cloud"
+            src="/bg.png"
+            alt="Space Background"
             fill
             priority
-            className="object-contain object-top-left"
+            unoptimized
+            className="object-cover object-center"
           />
         </div>
-
-        <div className="absolute top-[22%] -left-[15%] w-[65vw] h-[55vh] transform -rotate-[15deg]">
-          <Image
-            src="/cloud.png"
-            alt="Mid-Left Cloud"
-            fill
-            className="object-contain object-left"
-          />
-        </div>
-
-        <div className="absolute -bottom-[8%] -right-[8%] w-[85vw] h-[70vh] transform -rotate-[12deg] scale-x-[-1]">
-          <Image
-            src="/cloud.png"
-            alt="Bottom-Right Cloud"
-            fill
-            className="object-contain object-bottom-right"
-          />
-        </div>
-
-        <div className="absolute -bottom-[50%] -left-[10%] w-[60vw] h-[50vh] transform rotate-[25deg]">
-          <Image
-            src="/cloud.png"
-            alt="Bottom-Left Cloud"
-            fill
-            className="object-contain object-bottom-left"
-          />
-        </div>
+        
+        {/* 2. Deep Space 3D Constellations & Full-Page Shooting Stars Canvas */}
+        <ConstellationsCanvas />
       </div>
-      */}
 
-      {/* 2. Deep Space 3D Constellations & Full-Page Shooting Stars Canvas */}
-      <ConstellationsCanvas mouseX={offset.x} mouseY={offset.y} />
-
-      {/* 3. Three.js 3D Textured Planets Canvas (TEMPORARILY ON STANDBY) */}
-      {/* <PlanetsCanvas mouseX={offset.x} mouseY={offset.y} /> */}
-
-      {/* 4. Foreground Floating Transparent Cloud Layer (TEMPORARILY COMMENTED OUT)
-      <div
-        className="max-md:hidden absolute inset-0 pointer-events-none select-none z-[100]"
-        style={{
-          transform: `translate3d(${offset.x * 48}px, ${offset.y * 48}px, 0)`,
-        }}
-      >
-        <div className="absolute -bottom-[42%] -right-[65%] w-[85vw] h-[95vh] transform -rotate-[6deg] scale-x-[-1] opacity-95">
-          <Image
-            src="/cloud-transparent.png"
-            alt="Foreground Bottom-Right Cloud"
-            fill
-            className="object-contain object-bottom-right drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)]"
-          />
-        </div>
-
-        <div className="absolute -top-[40%] -left-[25%] w-[80vw] h-[70vh] transform rotate-[170deg] opacity-90">
-          <Image
-            src="/cloud-transparent.png"
-            alt="Foreground Top-Left Cloud"
-            fill
-            className="object-contain object-top-left drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
-          />
-        </div>
-
-        <div className="absolute top-[65%] -left-[32%] w-[68%] h-[98vh] opacity-95 transform -rotate-[10deg]">
-          <Image
-            src="/fat-cloud-transparent.png"
-            alt="Fat Cloud"
-            fill
-            className="object-contain drop-shadow-[0_12px_30px_rgba(0,0,0,0.6)]"
-          />
-        </div>
-
-        <div className="absolute bottom-[60%] left-[78%] w-[80vw] h-[95vh] transform scale-x-[-1] opacity-85">
-          <Image
-            src="/cloud-transparent.png"
-            alt="Foreground Bottom-Left Cloud"
-            fill
-            className="object-contain object-bottom-left drop-shadow-[0_8px_20px_rgba(0,0,0,0.4)]"
-          />
-        </div>
-      </div>
-      */}
-
-
-
+      <main className="hero-bg relative w-full h-screen shrink-0 overflow-hidden z-10">
+        
       {/* 4. Artistic Floating Astronaut - Zero Gravity Parallax Floating Element */}
       <div
-        className="absolute bottom-[20%] sm:-bottom-[7%] right-[4%] sm:right-[7%] w-[38vw] sm:w-[28vw] md:w-[22vw] max-w-[340px] aspect-[0.7] pointer-events-none select-none z-[25] transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate3d(${offset.x * 42}px, ${offset.y * 42}px, 0)`,
-        }}
+        ref={astro1Ref}
+        className="absolute bottom-[20%] sm:-bottom-[7%] right-[4%] sm:right-[7%] w-[38vw] sm:w-[28vw] md:w-[22vw] max-w-[340px] aspect-[0.7] pointer-events-none select-none z-[25]"
       >
         <div className="relative w-full h-full animate-astro-float">
           {/* Subtle Ambient Cosmic Backlight Glow */}
@@ -190,8 +109,8 @@ export default function Home() {
             src="/astronaut.png"
             alt="Artistic Floating Astronaut"
             fill
-            priority
             unoptimized
+            loading="lazy"
             className="object-contain filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.85)] drop-shadow-[0_0_20px_rgba(56,189,248,0.4)]"
           />
         </div>
@@ -199,10 +118,8 @@ export default function Home() {
 
       {/* 4b. Secondary Floating Astronaut (Top-Left Zero Gravity Element) */}
       <div
-        className="absolute top-[22%] sm:top-[2%] left-[3%] sm:left-[6%] w-[35vw] sm:w-[25vw] md:w-[20vw] max-w-[310px] aspect-[0.75] pointer-events-none select-none z-[25] transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate3d(${offset.x * -38}px, ${offset.y * -38}px, 0)`,
-        }}
+        ref={astro2Ref}
+        className="absolute top-[22%] sm:top-[2%] left-[3%] sm:left-[6%] w-[35vw] sm:w-[25vw] md:w-[20vw] max-w-[310px] aspect-[0.75] pointer-events-none select-none z-[25]"
       >
         <div className="relative w-full h-full animate-astro-float-reverse">
           {/* Ambient Cosmic Backlight Glow */}
@@ -213,8 +130,8 @@ export default function Home() {
             src="/astronaut2.png"
             alt="Second Floating Astronaut"
             fill
-            priority
             unoptimized
+            loading="lazy"
             className="object-contain filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.85)] drop-shadow-[0_0_20px_rgba(251,191,36,0.4)]"
           />
         </div>
@@ -222,10 +139,8 @@ export default function Home() {
 
       {/* 5. Center Hero Title & High-End Theme-Matched CTA Button */}
       <div
+        ref={titleRef}
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-30 px-4"
-        style={{
-          transform: `translate3d(${offset.x * 35}px, ${offset.y * 35}px, 0)`,
-        }}
       >
         <div className="relative -translate-y-6 sm:-translate-y-10 w-[98vw] sm:w-[90vw] max-w-[1200px] h-[75vh] sm:h-[65vh] md:h-[75vh] lg:h-[95vh] flex items-center justify-center">
 
@@ -273,30 +188,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* 6. Mobile Only Bottom Moon Horizon & Rover */}
-      <div className="md:hidden absolute -bottom-32 left-1/2 -translate-x-1/2 w-[135vw] max-w-[650px] pointer-events-none select-none z-20 flex flex-col items-center justify-end">
-        {/* Artistic Lunar Lander Craft Attached to Moon Apex */}
-        <div className="relative w-32 sm:w-44 h-32 sm:h-44 -mb-10 sm:-mb-14 translate-y-8 -translate-x-24 sm:-translate-x-8 z-30 transform -rotate-14">
-          <Image
-            src="/lander.png"
-            alt="Artistic Lunar Lander Spacecraft"
-            fill
-            unoptimized
-            className="object-contain filter drop-shadow-[0_8px_20px_rgba(0,0,0,0.95)] drop-shadow-[0_0_15px_rgba(251,191,36,0.35)]"
-          />
-        </div>
-
-        <Image
-          src="/mobile-moon.png"
-          alt="Moon Horizon"
-          width={700}
-          height={400}
-          priority
-          unoptimized
-          className="object-contain object-bottom w-full h-auto filter drop-shadow-[0_-8px_20px_rgba(255,255,255,0.12)]"
-        />
-      </div>
     </main>
+  </div>
   );
 }

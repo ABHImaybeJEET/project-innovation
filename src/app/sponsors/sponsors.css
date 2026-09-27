@@ -1,0 +1,29 @@
+.sponsors-hero-bg {
+  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.03) 0%, transparent 60%);
+}
+
+.sponsor-category-line {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.5) 0%, rgba(251, 191, 36, 0) 100%);
+}
+
+.sponsor-category-line::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 4px;
+  height: 4px;
+  background: #fbbf24;
+  box-shadow: 0 0 10px #fbbf24;
+}
+
+.sponsor-category-number {
+  font-family: var(--font-exo2);
+  color: rgba(255, 255, 255, 0.1);
+  font-size: 2.5rem;
+  font-weight: 200;
+  line-height: 1;
+}
