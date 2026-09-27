@@ -19,6 +19,7 @@ export default function Navbar({ isPlaying = false, onToggleAudio }: NavbarProps
     { name: "About", href: "/about" },
     { name: "Events", href: "/events" },
     { name: "Gallery", href: "/gallery" },
+    { name: "Sponsors", href: "/sponsors" },
     { name: "Merch", href: "/merch" },
     { name: "Login", href: "/login" },
   ];
