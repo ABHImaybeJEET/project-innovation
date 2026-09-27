@@ -26,6 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const audio = new Audio("/kawaii-kitsune-kevin-macleod-main-version-7984-04-02.mp3");
+    audio.preload = "none";
     audio.loop = true;
     audio.volume = 0.5;
     audioRef.current = audio;

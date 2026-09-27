@@ -66,31 +66,11 @@ export default function PaintSplatterIntro({
         router.prefetch("/about");
         router.prefetch("/gallery");
         router.prefetch("/merch");
-
-        // 2. Pre-fetch and parse heavy 3D chunks so mobile navigation doesn't hang later
-        await Promise.all([
-          import("@/components/about/AboutConstellations"),
-          import("@/components/about/CosmicCometSystem"),
-          import("@/components/about/FloatingAstronauts"),
-          import("@/components/events/StarConstellationCanvas"),
-          import("@/components/Cinematic3DGallery"),
-          import("@/components/home/ConstellationsCanvas"),
-          import("@/components/events/EventGlobe"),
-        ]);
         
-        // 3. Cache critical heavy images in browser memory
+        // 2. Cache ONLY critical images for the initial render
         const imagesToPreload = [
           "/bg.png",
-          "/innovision_transparent.png",
-          "/astronaut.png",
-          "/astronaut2.png",
-          "/planets/robowars.jpg",
-          "/planets/stellarnight.jpg",
-          "/planets/hackinnovision.jpg",
-          "/merch/odyssey-tee.jpg",
-          "/merch/nova-hoodie.jpg",
-          "/merch/star-map-tee.jpg",
-          "/merch/orbit-cap.jpg"
+          "/innovision_transparent.png"
         ];
 
         await Promise.all(imagesToPreload.map(src => {
@@ -102,8 +82,8 @@ export default function PaintSplatterIntro({
           });
         }));
 
-        // Ensure at least 1.5s of loading for smooth UX
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Ensure at least 0.5s of loading to prevent flashing, but don't stall mobile
+        await new Promise(resolve => setTimeout(resolve, 500));
       } catch (error) {
         console.error("Failed to preload some assets", error);
       } finally {
