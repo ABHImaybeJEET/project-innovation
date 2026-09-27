@@ -15,6 +15,7 @@
     "@react-three/fiber": "^9.7.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
+    "@supabase/storage-js": "^2.116.0",
     "@types/pg": "^8.23.1",
     "@types/three": "^0.185.4",
     "framer-motion": "^13.2.0",

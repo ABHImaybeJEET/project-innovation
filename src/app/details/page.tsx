@@ -1,29 +1,27 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import LoginForm from "@/components/auth/LoginForm";
+import ParticipantDetailsForm from "@/components/auth/ParticipantDetailsForm";
 
 export const metadata = {
-  title: "Celestial Access | INNOVISION 2026",
-  description: "Sign in to INNOVISION via Google OAuth or Passwordless Magic Link with Security Verification Pass",
+  title: "Participant Credentials | INNOVISION 2026",
+  description: "Enter your official participant details for INNOVISION 2026 registration",
 };
 
-function LoginLoadingFallback() {
+function DetailsLoadingFallback() {
   return (
     <div className="p-1 sm:p-2 rounded-3xl bg-gradient-to-b from-[#fbbf24]/30 via-teal-500/15 to-amber-500/25 border border-[#fbbf24]/40 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
       <div className="rounded-[calc(1.5rem-0.25rem)] bg-[#03091e]/95 p-12 text-center flex flex-col items-center justify-center space-y-4 border border-white/10">
-        <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-400/30 flex items-center justify-center text-amber-400 animate-pulse">
-          <Loader2 className="w-6 h-6 animate-spin text-amber-300" />
-        </div>
+        <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
         <p className="text-xs tracking-[0.25em] text-slate-400 uppercase font-mono">
-          Initializing Celestial Gateway...
+          Loading Participant Form...
         </p>
       </div>
     </div>
   );
 }
 
-export default function LoginPage() {
+export default function DetailsPage() {
   return (
     <main className="relative min-h-screen w-full bg-[#020712] text-white flex flex-col items-center justify-center px-4 py-12 sm:py-24 overflow-hidden select-none">
       {/* Background Deep Space Cosmic Glow */}
@@ -46,10 +44,14 @@ export default function LoginPage() {
       </div>
 
       {/* Main Container */}
-      <div className="relative z-10 w-full max-w-md my-auto">
-        <Suspense fallback={<LoginLoadingFallback />}>
-          <LoginForm />
-        </Suspense>
+      <div className="relative z-10 w-full max-w-xl my-auto">
+        <div className="p-1 sm:p-2 rounded-3xl bg-gradient-to-b from-[#fbbf24]/30 via-teal-500/15 to-amber-500/25 border border-[#fbbf24]/40 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_40px_rgba(251,191,36,0.2)]">
+          <div className="rounded-[calc(1.5rem-0.25rem)] bg-[#03091e]/95 p-6 sm:p-10 border border-white/10">
+            <Suspense fallback={<DetailsLoadingFallback />}>
+              <ParticipantDetailsForm />
+            </Suspense>
+          </div>
+        </div>
       </div>
     </main>
   );

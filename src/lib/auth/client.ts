@@ -3,25 +3,35 @@ import type { AuthError, Session, User } from "@supabase/supabase-js";
 
 /**
  * Initiates Google OAuth sign in flow.
+ * Uses skipBrowserRedirect to obtain the direct OAuth URL and force local origin preservation.
  */
 export async function signInWithGoogle(
   redirectTo?: string
 ): Promise<{ error: AuthError | null }> {
   try {
     const supabase = createClient();
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
     const targetRedirect = redirectTo
       ? `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`
       : `${origin}/auth/callback`;
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: targetRedirect,
+        skipBrowserRedirect: true,
       },
     });
 
-    return { error };
+    if (error) {
+      return { error };
+    }
+
+    if (data?.url && typeof window !== "undefined") {
+      window.location.href = data.url;
+    }
+
+    return { error: null };
   } catch (err) {
     return { error: err as AuthError };
   }
@@ -36,7 +46,7 @@ export async function signInWithEmailOtp(
 ): Promise<{ error: AuthError | null }> {
   try {
     const supabase = createClient();
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
     const targetRedirect = redirectTo
       ? `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`
       : `${origin}/auth/callback`;

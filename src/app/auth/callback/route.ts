@@ -8,22 +8,27 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get("next") ?? "/details";
 
   // Sanitize redirect target to ensure internal relative path
-  const finalRedirect = sanitizeRedirectUrl(next);
+  const finalRedirect = sanitizeRedirectUrl(next) || "/details";
 
   const getRedirectUrl = (path: string) => {
-    const forwardedHost = request.headers.get("x-forwarded-host");
-    const isLocalEnv = process.env.NODE_ENV === "development";
-
-    if (isLocalEnv) {
-      return `${origin}${path}`;
-    } else if (forwardedHost) {
-      return `https://${forwardedHost}${path}`;
-    } else {
+    const host = request.headers.get("host") || "";
+    if (
+      host.includes("localhost") ||
+      host.includes("127.0.0.1") ||
+      origin.includes("localhost") ||
+      origin.includes("127.0.0.1")
+    ) {
       return `${origin}${path}`;
     }
+
+    const forwardedHost = request.headers.get("x-forwarded-host");
+    if (forwardedHost) {
+      return `https://${forwardedHost}${path}`;
+    }
+    return `${origin}${path}`;
   };
 
   try {
@@ -56,4 +61,3 @@ export async function GET(request: Request) {
   // If code exchange or token verification failed, redirect to auth error page
   return NextResponse.redirect(`${origin}/auth/auth-error?error=ExchangeFailed`);
 }
-
