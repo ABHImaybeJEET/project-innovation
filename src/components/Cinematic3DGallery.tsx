@@ -18,7 +18,7 @@ export interface GalleryItem {
 const DEFAULT_GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1511497584788-876761c119ef?q=80&w=1200&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
     title: "MIMISA ROCKS",
     location: "AUSTRALIA",
     subtitle: "A piece of heaven",
@@ -164,7 +164,7 @@ export default function Cinematic3DGallery({
   const [viewportWidth, setViewportWidth] = useState(1200);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [isArranged, setIsArranged] = useState(false);
-  const hasArrangedOnceRef = useRef(false);
+  const [hasArrangedOnce, setHasArrangedOnce] = useState(false);
 
   const autoplayTimerRef = useRef<NodeJS.Timeout | null>(null);
   const userInteractionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -182,7 +182,7 @@ export default function Cinematic3DGallery({
   // Page entrance trigger — first mount chaotic, then arrange after noticeable delay
   useEffect(() => {
     const t2 = setTimeout(() => setIsArranged(true), 500); // 500ms clear view of chaotic state
-    const t3 = setTimeout(() => { hasArrangedOnceRef.current = true; }, 3200);
+    const t3 = setTimeout(() => { setHasArrangedOnce(true); }, 3200);
     return () => { clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
@@ -465,7 +465,7 @@ export default function Cinematic3DGallery({
                   filter: "blur(4px) brightness(0.8)",
                 }}
                 transition={isArranged ? (
-                  hasArrangedOnceRef.current ? {
+                  hasArrangedOnce ? {
                     x: { duration: navDuration, ease: navEase },
                     y: isActive
                       ? { duration: 3.5, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }
