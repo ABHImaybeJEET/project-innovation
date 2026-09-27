@@ -2,48 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, AlertCircle, Loader2, Send } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, Send, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function GenericRegistrationForm({ userEmail }: { userEmail: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [fullName, setFullName] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const stored = localStorage.getItem("innovision_user_details");
-    if (stored) {
-      try {
-        return JSON.parse(stored).fullName || "";
-      } catch {
-        return "";
-      }
-    }
-    return "";
-  });
-  const [collegeName, setCollegeName] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const stored = localStorage.getItem("innovision_user_details");
-    if (stored) {
-      try {
-        return JSON.parse(stored).college || "";
-      } catch {
-        return "";
-      }
-    }
-    return "";
-  });
-  const [mobileNumber, setMobileNumber] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const stored = localStorage.getItem("innovision_user_details");
-    if (stored) {
-      try {
-        return JSON.parse(stored).phone || "";
-      } catch {
-        return "";
-      }
-    }
-    return "";
-  });
+  const [fullName, setFullName] = useState("");
+  const [collegeName, setCollegeName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [turnstileToken] = useState<string>("XXXX.DUMMY.PASS.XXXX");
   const [submitted, setSubmitted] = useState(false);
 
@@ -109,6 +76,10 @@ export default function GenericRegistrationForm({ userEmail }: { userEmail: stri
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] uppercase tracking-[0.25em] font-semibold">
+          <Sparkles className="w-3 h-3" />
+          <span>INNOVISION 2026</span>
+        </div>
         <h1 className="text-2xl sm:text-4xl font-bold font-serif tracking-wider text-amber-100 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">
           CELESTIAL REGISTRATION
         </h1>
@@ -136,6 +107,10 @@ export default function GenericRegistrationForm({ userEmail }: { userEmail: stri
               value={userEmail}
               className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-white/10 text-white/70 text-sm cursor-not-allowed"
             />
+            <div className="absolute right-3 flex items-center gap-1 text-[10px] text-teal-400 font-mono">
+              <ShieldCheck className="w-3 h-3" />
+              Verified
+            </div>
           </div>
         </div>
 

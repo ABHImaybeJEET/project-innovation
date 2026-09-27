@@ -5,17 +5,15 @@ import LoginForm from "@/components/auth/LoginForm";
 
 export const metadata = {
   title: "Celestial Access | INNOVISION 2026",
-  description: "Sign in to INNOVISION via Google OAuth or Passwordless Magic Link with Security Verification Pass",
+  description: "Sign in to INNOVISION via Google or Passwordless Email OTP",
 };
 
 function LoginLoadingFallback() {
   return (
-    <div className="p-1 sm:p-2 rounded-3xl bg-gradient-to-b from-[#fbbf24]/30 via-teal-500/15 to-amber-500/25 border border-[#fbbf24]/40 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
-      <div className="rounded-[calc(1.5rem-0.25rem)] bg-[#03091e]/95 p-12 text-center flex flex-col items-center justify-center space-y-4 border border-white/10">
-        <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-400/30 flex items-center justify-center text-amber-400 animate-pulse">
-          <Loader2 className="w-6 h-6 animate-spin text-amber-300" />
-        </div>
-        <p className="text-xs tracking-[0.25em] text-slate-400 uppercase font-mono">
+    <div className="p-1 sm:p-2 rounded-3xl bg-gradient-to-b from-[#fbbf24]/20 via-teal-500/10 to-amber-500/20 border border-[#fbbf24]/30 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
+      <div className="rounded-[calc(1.5rem-0.25rem)] bg-[#03091e]/95 p-12 text-center flex flex-col items-center justify-center space-y-4">
+        <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+        <p className="text-xs tracking-widest text-slate-400 uppercase font-mono">
           Initializing Celestial Gateway...
         </p>
       </div>
@@ -25,28 +23,25 @@ function LoginLoadingFallback() {
 
 export default function LoginPage() {
   return (
-    <main className="relative min-h-screen w-full bg-[#020712] text-white flex flex-col items-center justify-center px-4 py-12 sm:py-24 overflow-hidden select-none">
+    <main className="relative min-h-screen w-full bg-[#020712] text-white flex flex-col items-center justify-center px-4 py-24 overflow-hidden select-none">
       {/* Background Deep Space Cosmic Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-[#03091e]/90 to-[#020712] pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse duration-1000" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,_rgba(30,27,75,0.4),_rgba(3,9,30,0.85),_#020712)] pointer-events-none" />
+      <div className="absolute top-1/4 left-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Grid Pattern Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
-
-      {/* Top Floating Header Controls */}
-      <div className="absolute top-6 left-4 sm:left-12 z-50">
+      {/* Back Button */}
+      <div className="absolute top-8 left-6 sm:left-12 z-50">
         <Link
           href="/"
-          className="group flex items-center gap-2 px-4 py-2.5 rounded-full border border-amber-500/30 bg-[#020712]/90 backdrop-blur-md text-amber-200 text-xs tracking-widest uppercase hover:border-amber-400 hover:text-white hover:shadow-[0_0_20px_rgba(245,158,11,0.25)] transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.15)] cursor-pointer"
+          className="group flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/30 bg-[#020712]/80 backdrop-blur-md text-amber-200 text-xs tracking-widest uppercase hover:border-amber-400 hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform text-amber-400" />
-          <span className="font-semibold">Back to Home</span>
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Home</span>
         </Link>
       </div>
 
       {/* Main Container */}
-      <div className="relative z-10 w-full max-w-md my-auto">
+      <div className="relative z-10 w-full max-w-md mt-6">
         <Suspense fallback={<LoginLoadingFallback />}>
           <LoginForm />
         </Suspense>
