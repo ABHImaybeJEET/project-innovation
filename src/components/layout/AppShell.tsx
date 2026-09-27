@@ -14,11 +14,20 @@ export const AudioContext = createContext({
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Global Ink-Mask & Preloader states
-  const [showPreloader, setShowPreloader] = useState(true);
-  const [isActive, setIsActive] = useState(false);
-  const [removeGif, setRemoveGif] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Consistent initial states matching client session
+  const [showPreloader, setShowPreloader] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return sessionStorage.getItem("innovision_intro_seen") !== "true";
+  });
+  const [isActive, setIsActive] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("innovision_intro_seen") === "true";
+  });
+  const [removeGif, setRemoveGif] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("innovision_intro_seen") === "true";
+  });
 
   // Global Audio Controller (Kawai Kitsune)
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -37,14 +46,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleStart = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("innovision_intro_seen", "true");
+    }
     setIsActive(true);
     setShowPreloader(false);
   };
 
-  // 1. Timing mask removal: wait 3s after isActive becomes true
+  // 1. Timing mask removal: wait 3s after isActive becomes true if mask is active
   useEffect(() => {
     if (isActive && !removeGif) {
-      const timer = setTimeout(() => setRemoveGif(true), 3000);
+      const timer = setTimeout(() => {
+        setRemoveGif(true);
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("innovision_intro_seen", "true");
+        }
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [isActive, removeGif]);
@@ -118,10 +135,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           {children}
 
           {/* Global Footer */}
-          {pathname !== '/events' && <Footer />}
+          {pathname !== "/events" && <Footer />}
         </div>
       </RocketTransitionProvider>
     </AudioContext.Provider>
   );
 }
-

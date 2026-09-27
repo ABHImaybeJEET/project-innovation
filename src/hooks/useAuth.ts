@@ -14,6 +14,7 @@ interface UseAuthReturn {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  signInAsDevUser: () => void;
   signInWithGoogle: (redirectTo?: string) => Promise<{ error: AuthError | null }>;
   signInWithEmailOtp: (email: string, redirectTo?: string) => Promise<{ error: AuthError | null }>;
   verifyEmailOtp: (
@@ -29,15 +30,54 @@ interface UseAuthReturn {
  * Tokens are managed automatically by Supabase and synchronized with SSR cookies.
  */
 export function useAuth(): UseAuthReturn {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === "undefined") return null;
+    const stored = localStorage.getItem("innovision_dev_user");
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("innovision_dev_user")) {
+      return false;
+    }
+    return true;
+  });
+
+  // Safety fallback: Ensure loading never hangs indefinitely
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
     let authListener: { unsubscribe: () => void } | null = null;
 
     async function initAuth() {
+      // If dev user is stored in localStorage, use it immediately
+      const storedDev = typeof window !== "undefined" ? localStorage.getItem("innovision_dev_user") : null;
+      if (storedDev) {
+        try {
+          const parsed = JSON.parse(storedDev);
+          if (mounted) {
+            setUser(parsed);
+            setLoading(false);
+            return;
+          }
+        } catch {
+          // fallback
+        }
+      }
+
       try {
         const supabase = createClient();
 
@@ -56,7 +96,7 @@ export function useAuth(): UseAuthReturn {
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-          if (mounted) {
+          if (mounted && !localStorage.getItem("innovision_dev_user")) {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
@@ -80,6 +120,26 @@ export function useAuth(): UseAuthReturn {
         authListener.unsubscribe();
       }
     };
+  }, []);
+
+  /**
+   * Fast frontend development sign in bypass.
+   */
+  const signInAsDevUser = useCallback(() => {
+    const mock: User = {
+      id: "dev-user-001",
+      email: "dev@innovision2026.com",
+      app_metadata: { provider: "email" },
+      user_metadata: { full_name: "Frontend Developer", avatar_url: "" },
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+      role: "authenticated",
+      updated_at: new Date().toISOString(),
+    } as unknown as User;
+
+    localStorage.setItem("innovision_dev_user", JSON.stringify(mock));
+    setUser(mock);
+    setLoading(false);
   }, []);
 
   /**
@@ -127,11 +187,10 @@ export function useAuth(): UseAuthReturn {
    * Signs out the user and clears session tokens.
    */
   const signOut = useCallback(async (): Promise<{ error: AuthError | null }> => {
+    localStorage.removeItem("innovision_dev_user");
     const { error } = await signOutUser();
-    if (!error) {
-      setUser(null);
-      setSession(null);
-    }
+    setUser(null);
+    setSession(null);
     return { error };
   }, []);
 
@@ -139,9 +198,11 @@ export function useAuth(): UseAuthReturn {
     user,
     session,
     loading,
+    signInAsDevUser,
     signInWithGoogle,
     signInWithEmailOtp,
     verifyEmailOtp,
     signOut,
   };
 }
+
