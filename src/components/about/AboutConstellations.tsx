@@ -34,14 +34,14 @@ export default function AboutConstellations() {
     let nodes: Node[] = [];
     let animationFrameId: number;
 
-    const MAX_NODES = window.innerWidth < 768 ? 3 : 85; // Distributed across the 4 border perimeters
-    const LINK = window.innerWidth < 768 ? 40 : 145; // Distance to connect stars
+    const MAX_NODES = window.innerWidth < 768 ? 4 : 38; // Optimized for 60fps performance
+    const LINK = window.innerWidth < 768 ? 40 : 135; // Distance to connect stars
     
     // Track pointer natively via window so it works even though canvas is pointer-events-none
     const pointer = { x: -1000, y: -1000 };
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = width * dpr;
@@ -170,12 +170,13 @@ export default function AboutConstellations() {
       const ry = Math.max(190, height * 0.32);
       
       // Draw Links First so they are behind nodes
-      ctx.strokeStyle = "#e2e8f0";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(226, 232, 240, 0.25)";
+      ctx.lineWidth = 0.8;
       
-      const maxConnections = 6;
+      const maxConnections = 5;
       const connectionsCount = new Array(nodes.length).fill(0);
 
+      ctx.beginPath();
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           if (connectionsCount[i] >= maxConnections || connectionsCount[j] >= maxConnections) continue;
@@ -189,15 +190,12 @@ export default function AboutConstellations() {
 
             connectionsCount[i]++;
             connectionsCount[j]++;
-            const lineAlpha = midDistSq < 1.0 ? Math.max(0, (midDistSq - 0.7) / 0.3) : 1;
-            ctx.globalAlpha = (0.15 + (1 - d / LINK) * 0.35) * lineAlpha;
-            ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.stroke();
           }
         }
       }
+      ctx.stroke();
 
       const now = Date.now();
 

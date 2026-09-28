@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, AlertCircle, Loader2, Send, ShieldCheck, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle2, AlertCircle, Loader2, Send, ShieldCheck, Sparkles, ArrowLeft } from "lucide-react";
 
 export default function GenericRegistrationForm({ userEmail }: { userEmail: string }) {
   const router = useRouter();
@@ -63,7 +64,7 @@ export default function GenericRegistrationForm({ userEmail }: { userEmail: stri
         <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 animate-bounce">
           <CheckCircle2 className="w-10 h-10" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold font-serif text-amber-100 tracking-wider">
+        <h2 className="text-2xl sm:text-3xl font-bold font-serif text-amber-100 tracking-wider uppercase">
           REGISTRATION CONFIRMED!
         </h2>
         <p className="text-sm text-slate-300 max-w-md">
@@ -75,16 +76,29 @@ export default function GenericRegistrationForm({ userEmail }: { userEmail: stri
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] uppercase tracking-[0.25em] font-semibold">
-          <Sparkles className="w-3 h-3" />
+      {/* Top Navigation */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/"
+          className="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-300/80 hover:text-amber-200 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span>BACK</span>
+        </Link>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] uppercase tracking-[0.2em] font-mono">
+          <Sparkles className="w-3 h-3 text-amber-400" />
           <span>INNOVISION 2026</span>
         </div>
-        <h1 className="text-2xl sm:text-4xl font-bold font-serif tracking-wider text-amber-100 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">
-          CELESTIAL REGISTRATION
+      </div>
+
+      {/* Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wider text-amber-100 font-serif uppercase">
+          REGISTER
         </h1>
+        <div className="w-full h-px bg-gradient-to-r from-amber-500/40 via-amber-400/20 to-transparent" />
         <p className="text-xs sm:text-sm text-slate-400 font-light">
-          Claim your pass to the grand innovation odyssey
+          Fill in your details to complete registration.
         </p>
       </div>
 
@@ -96,27 +110,10 @@ export default function GenericRegistrationForm({ userEmail }: { userEmail: stri
           </div>
         )}
 
-        <div className="space-y-1">
-          <label className="text-xs uppercase tracking-wider text-amber-200/80 font-medium">
-            Email Address
-          </label>
-          <div className="relative flex items-center">
-            <input
-              type="email"
-              readOnly
-              value={userEmail}
-              className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-white/10 text-white/70 text-sm cursor-not-allowed"
-            />
-            <div className="absolute right-3 flex items-center gap-1 text-[10px] text-teal-400 font-mono">
-              <ShieldCheck className="w-3 h-3" />
-              Verified
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-xs uppercase tracking-wider text-amber-200/80 font-medium">
-            Full Name
+        {/* Full Name */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-amber-100/90">
+            Name (as on government ID)
           </label>
           <input
             type="text"
@@ -124,47 +121,77 @@ export default function GenericRegistrationForm({ userEmail }: { userEmail: stri
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="e.g. Alex Vance"
-            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-white/10 text-white text-sm focus:outline-none focus:border-amber-400/60 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-[#081028]/90 border border-white/15 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]"
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="text-xs uppercase tracking-wider text-amber-200/80 font-medium">
-            College Name
+        {/* Email Address (Pre-filled from session) */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-amber-100/90">
+            Email
+          </label>
+          <div className="relative flex items-center">
+            <input
+              type="email"
+              readOnly
+              value={userEmail}
+              className="w-full px-4 py-3 rounded-xl bg-[#060c20]/95 border border-white/10 text-white/80 text-sm cursor-not-allowed select-all"
+            />
+            <div className="absolute right-3 flex items-center gap-1 px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/30 text-[10px] text-teal-300 font-mono">
+              <ShieldCheck className="w-3 h-3 text-teal-400" />
+              Verified
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-500 pl-1">
+            This is the email you signed in with.
+          </p>
+        </div>
+
+        {/* Mobile Number */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-amber-100/90">
+            Phone number
+          </label>
+          <div className="relative flex items-center">
+            <input
+              type="tel"
+              required
+              pattern="\d{10}"
+              title="Mobile number must be exactly 10 digits"
+              value={mobileNumber}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                if (val.length <= 10) setMobileNumber(val);
+              }}
+              placeholder="10-digit mobile"
+              className="w-full px-4 py-3 rounded-xl bg-[#081028]/90 border border-white/15 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]"
+            />
+            <div className="absolute right-3 text-[10px] font-mono text-slate-400">
+              {mobileNumber.length}/10
+            </div>
+          </div>
+        </div>
+
+        {/* College Name */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-amber-100/90">
+            College
           </label>
           <input
             type="text"
             required
             value={collegeName}
             onChange={(e) => setCollegeName(e.target.value)}
-            placeholder="NIT Rourkela"
-            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-white/10 text-white text-sm focus:outline-none focus:border-amber-400/60 transition-colors"
+            placeholder="e.g. NIT Rourkela"
+            className="w-full px-4 py-3 rounded-xl bg-[#081028]/90 border border-white/15 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]"
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="text-xs uppercase tracking-wider text-amber-200/80 font-medium">
-            Mobile Number
-          </label>
-          <input
-            type="tel"
-            required
-            pattern="\d{10}"
-            title="Mobile number must be exactly 10 digits"
-            value={mobileNumber}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "");
-              if (val.length <= 10) setMobileNumber(val);
-            }}
-            placeholder="10 digit mobile number"
-            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-white/10 text-white text-sm focus:outline-none focus:border-amber-400/60 transition-colors"
-          />
-        </div>
-
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-teal-400 text-slate-950 font-bold text-xs sm:text-sm uppercase tracking-[0.25em] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          className="w-full mt-6 py-4 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-bold text-xs sm:text-sm uppercase tracking-[0.25em] hover:brightness-110 hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>

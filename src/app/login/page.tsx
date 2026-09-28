@@ -41,7 +41,7 @@ export default function LoginPage() {
       </div>
 
       {/* Main Container */}
-      <div className="relative z-10 w-full max-w-md mt-6">
+      <div className="relative z-10 w-full max-w-xl mt-6">
         <Suspense fallback={<LoginLoadingFallback />}>
           <LoginForm />
         </Suspense>

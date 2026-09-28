@@ -35,11 +35,11 @@ function Planet({ texture, index, currentIndex, total }: PlanetProps) {
       targetScale = 1.2;
     }
 
-    meshRef.current.position.x = MathUtils.lerp(meshRef.current.position.x, targetX, 0.04);
-    meshRef.current.position.y = MathUtils.lerp(meshRef.current.position.y, targetY, 0.04);
-    meshRef.current.position.z = MathUtils.lerp(meshRef.current.position.z, targetZ, 0.04);
+    meshRef.current.position.x = MathUtils.lerp(meshRef.current.position.x, targetX, 0.065);
+    meshRef.current.position.y = MathUtils.lerp(meshRef.current.position.y, targetY, 0.065);
+    meshRef.current.position.z = MathUtils.lerp(meshRef.current.position.z, targetZ, 0.065);
     
-    const scale = MathUtils.lerp(meshRef.current.scale.x, targetScale, 0.04);
+    const scale = MathUtils.lerp(meshRef.current.scale.x, targetScale, 0.065);
     meshRef.current.scale.set(scale, scale, scale);
 
     meshRef.current.rotation.y += 0.001;

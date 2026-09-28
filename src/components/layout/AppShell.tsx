@@ -14,15 +14,47 @@ export const AudioContext = createContext({
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isRoot = pathname === "/";
-  
-  // Global Ink-Mask & Preloader states
-  // Default to showing intro ONLY if we are on the root page. Sub-pages will bypass it instantly.
-  const [showPreloader, setShowPreloader] = useState(isRoot);
-  const [isActive, setIsActive] = useState(!isRoot);
-  const [removeGif, setRemoveGif] = useState(!isRoot);
-  
+  const isSubpage = pathname !== "/";
+
+  // Global Ink-Mask & Preloader states - subpages skip preloader immediately
+  const [showPreloader, setShowPreloader] = useState(!isSubpage);
+  const [isActive, setIsActive] = useState(isSubpage);
+  const [removeGif, setRemoveGif] = useState(isSubpage);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Synchronize state on pathname changes so navigation works instantly without refresh
+  useEffect(() => {
+    if (pathname !== "/") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowPreloader(false);
+      setIsActive(true);
+      setRemoveGif(true);
+      if (wrapperRef.current) {
+        wrapperRef.current.style.maskImage = "none";
+        wrapperRef.current.style.webkitMaskImage = "none";
+      }
+      document.body.style.position = "static";
+      document.body.style.overflow = "auto";
+    } else {
+      try {
+        const entered = sessionStorage.getItem("innovision_entered");
+        if (entered === "true") {
+           
+          setShowPreloader(false);
+          setIsActive(true);
+          setRemoveGif(true);
+          if (wrapperRef.current) {
+            wrapperRef.current.style.maskImage = "none";
+            wrapperRef.current.style.webkitMaskImage = "none";
+          }
+          document.body.style.position = "static";
+          document.body.style.overflow = "auto";
+        }
+      } catch {
+        // Ignore sessionStorage restrictions if private browsing
+      }
+    }
+  }, [pathname]);
 
   // Global Audio Controller (Kawai Kitsune)
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -43,16 +75,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // If the user already saw the intro this session, skip it even on the root page
-    if (isRoot && sessionStorage.getItem("intro_seen") === "true") {
+    if (!isSubpage && sessionStorage.getItem("intro_seen") === "true") {
       setTimeout(() => {
         setShowPreloader(false);
         setIsActive(true);
         setRemoveGif(true);
       }, 0);
     }
-  }, [isRoot]);
+  }, [isSubpage]);
 
   const handleStart = () => {
+    try {
+      sessionStorage.setItem("innovision_entered", "true");
+    } catch {
+      // Ignore
+    }
     setIsActive(true);
     setShowPreloader(false);
     sessionStorage.setItem("intro_seen", "true");
@@ -68,19 +105,23 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   // 2. Applying/clearing mask on the wrapper node & scroll lock
   useEffect(() => {
-    if (removeGif && wrapperRef.current) {
-      wrapperRef.current.style.maskImage = "none";
-      wrapperRef.current.style.webkitMaskImage = "none";
+    if (pathname !== "/" || removeGif) {
+      if (wrapperRef.current) {
+        wrapperRef.current.style.maskImage = "none";
+        wrapperRef.current.style.webkitMaskImage = "none";
+      }
       document.body.style.position = "static";
       document.body.style.overflow = "auto";
+      return;
     }
-    if (isActive && !removeGif && wrapperRef.current) {
+
+    if (pathname === "/" && isActive && !removeGif && wrapperRef.current) {
       wrapperRef.current.style.maskImage = "";
       wrapperRef.current.style.webkitMaskImage = "";
       document.body.style.position = "fixed";
       document.body.style.overflow = "hidden";
     }
-  }, [removeGif, isActive]);
+  }, [removeGif, isActive, pathname]);
 
   // 3. Play audio on loop after intro reveal completes
   useEffect(() => {
@@ -116,7 +157,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <AudioContext.Provider value={{ isPlaying, toggleAudio }}>
       <RocketTransitionProvider>
-        <PaintSplatterIntro onStart={handleStart} showPreloader={showPreloader} />
+        {showPreloader && (
+          <PaintSplatterIntro onStart={handleStart} showPreloader={showPreloader} />
+        )}
 
         <div
           ref={wrapperRef}
