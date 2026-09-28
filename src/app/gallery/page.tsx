@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Gallery from "@/components/Gallery";
+import SpacecraftCursor from "@/components/about/SpacecraftCursor";
 
 export default function GalleryPage() {
   const mouseRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
@@ -42,6 +43,8 @@ export default function GalleryPage() {
 
   return (
     <main className="relative min-h-screen text-white overflow-hidden">
+      <SpacecraftCursor />
+
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div
           ref={bgRef}
