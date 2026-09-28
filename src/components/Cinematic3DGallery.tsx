@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -165,6 +166,8 @@ export default function Cinematic3DGallery({
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [isArranged, setIsArranged] = useState(false);
   const hasArrangedOnceRef = useRef(false);
+   
+  const hasArrangedOnce = hasArrangedOnceRef.current;
 
   const autoplayTimerRef = useRef<NodeJS.Timeout | null>(null);
   const userInteractionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -465,7 +468,7 @@ export default function Cinematic3DGallery({
                   filter: "blur(4px) brightness(0.8)",
                 }}
                 transition={isArranged ? (
-                  hasArrangedOnceRef.current ? {
+                  hasArrangedOnce ? {
                     x: { duration: navDuration, ease: navEase },
                     y: isActive
                       ? { duration: 3.5, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }

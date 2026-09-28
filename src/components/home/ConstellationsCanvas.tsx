@@ -498,7 +498,7 @@ export default function ConstellationsCanvas({
       }
       renderer.dispose();
     };
-  }, []);
+  }, [isMobile]);
 
   return isMobile ? null : (
     <div

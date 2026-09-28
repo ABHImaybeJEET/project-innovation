@@ -343,7 +343,7 @@ export default function AboutConstellations() {
       window.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isMobile]);
 
   return isMobile ? null : (
     <canvas

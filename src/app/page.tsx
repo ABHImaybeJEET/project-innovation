@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { ChevronRight, Rocket } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRocketTransition } from "@/components/transition/RocketTransitionContext";
 

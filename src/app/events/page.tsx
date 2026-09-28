@@ -5,6 +5,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import EventCarousel from "@/components/events/EventCarousel";
 import MainEvents from "@/components/events/MainEvents";
+import FunEvents from "@/components/events/FunEvents";
 
 // Dynamically import the heavy canvas component to avoid blocking initial load
 const StarConstellationCanvas = dynamic(
@@ -93,6 +94,9 @@ export default function EventsPage() {
 
       {/* SECTION 2: Main Events */}
       <MainEvents />
+
+      {/* SECTION 3: Fun Events */}
+      <FunEvents />
     </main>
   );
 }

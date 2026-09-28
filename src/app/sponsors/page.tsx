@@ -18,7 +18,6 @@ import {
   Eclipse,
   Flame,
   Globe2,
-  Layers,
   Leaf,
   MoonStar
 } from "lucide-react";

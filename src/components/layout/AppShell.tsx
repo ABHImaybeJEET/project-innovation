@@ -14,10 +14,14 @@ export const AudioContext = createContext({
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isRoot = pathname === "/";
+  
   // Global Ink-Mask & Preloader states
-  const [showPreloader, setShowPreloader] = useState(true);
-  const [isActive, setIsActive] = useState(false);
-  const [removeGif, setRemoveGif] = useState(false);
+  // Default to showing intro ONLY if we are on the root page. Sub-pages will bypass it instantly.
+  const [showPreloader, setShowPreloader] = useState(isRoot);
+  const [isActive, setIsActive] = useState(!isRoot);
+  const [removeGif, setRemoveGif] = useState(!isRoot);
+  
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Global Audio Controller (Kawai Kitsune)
@@ -37,9 +41,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    // If the user already saw the intro this session, skip it even on the root page
+    if (isRoot && sessionStorage.getItem("intro_seen") === "true") {
+      setTimeout(() => {
+        setShowPreloader(false);
+        setIsActive(true);
+        setRemoveGif(true);
+      }, 0);
+    }
+  }, [isRoot]);
+
   const handleStart = () => {
     setIsActive(true);
     setShowPreloader(false);
+    sessionStorage.setItem("intro_seen", "true");
   };
 
   // 1. Timing mask removal: wait 3s after isActive becomes true

@@ -116,7 +116,7 @@ export default function CosmicCursorEcho() {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [mounted]);
+  }, [mounted, isVisible]);
 
   if (!mounted) return null;
 

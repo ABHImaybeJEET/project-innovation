@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import ParticleText from "@/components/ParticleText";
 
 interface PaintSplatterIntroProps {
   onStart: () => void;
@@ -166,13 +166,24 @@ export default function PaintSplatterIntro({
       <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center min-h-[200px] justify-center">
         {/* Title Image */}
         <div className="space-y-1 flex flex-col items-center">
-          <div className="relative w-[75vw] max-w-[480px] h-[80px] sm:h-[110px]">
-            <Image
-              src="/innovision_transparent.png"
-              alt="INNOVISION"
-              fill
-              priority
-              className="object-contain filter drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+          <div className="relative w-[94vw] max-w-[780px] h-[130px] sm:h-[190px]">
+            <ParticleText
+              text="INNOVISION"
+              particleSize={2}
+              density={4}
+              color="#fef3c7"
+              highlightColor="#fbbf24"
+              scatter={180}
+              gatherDuration={1600}
+              stagger={420}
+              pointerRepel={40}
+              repelRadius={120}
+              idleDrift={0.7}
+              trigger="hover"
+              fontSize="clamp(3rem, 12vw, 8rem)"
+              fontWeight={800}
+              fontFamily="inherit"
+              glow
             />
           </div>
           <p className="text-sm sm:text-base text-amber-200/70 tracking-wider font-light">
