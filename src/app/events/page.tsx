@@ -67,7 +67,7 @@ export default function EventsPage() {
           style={{ transform: "translate3d(0px, 0px, 0) scale(1.08)" }}
         >
           <Image
-            src="/bg.png"
+            src="/events-bg.jpg"
             alt="Space Background"
             fill
             priority

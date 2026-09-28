@@ -2,9 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { ChevronRight, Rocket } from "lucide-react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useRocketTransition } from "@/components/transition/RocketTransitionContext";
 
 // Dynamically import heavy 3D canvases to prevent blocking initial page load
 const ConstellationsCanvas = dynamic(() => import("@/components/home/ConstellationsCanvas"), { ssr: false });
@@ -12,14 +11,10 @@ const ConstellationsCanvas = dynamic(() => import("@/components/home/Constellati
 
 export default function Home() {
   const mouseRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
-  
-  // Refs for direct DOM manipulation (bypasses React 60fps re-rendering)
   const bgRef = useRef<HTMLDivElement>(null);
   const astro1Ref = useRef<HTMLDivElement>(null);
   const astro2Ref = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
-
-  const { triggerLaunch } = useRocketTransition();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -163,8 +158,8 @@ export default function Home() {
 
           {/* Register Button */}
           <div className="absolute bottom-[30%] sm:bottom-[14%] md:bottom-[18%] lg:bottom-[22%] pointer-events-auto z-40">
-            <button
-              onClick={() => triggerLaunch("/register")}
+            <Link
+              href="/register"
               className="group relative inline-flex items-center justify-center p-1 sm:p-1.5 rounded-full bg-[#020712]/80 border border-white/20 backdrop-blur-2xl shadow-[0_12px_35px_rgba(0,0,0,0.9)] hover:border-white/50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105 active:scale-95 cursor-pointer"
             >
               {/* Double-Bezel Inner Core */}
@@ -184,7 +179,7 @@ export default function Home() {
                   <span className="text-[10px] text-cyan-300/80 font-serif">✦</span>
                 </div>
               </div>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

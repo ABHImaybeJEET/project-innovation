@@ -103,7 +103,7 @@ function getCoverflowTransform(
   isTablet: boolean,
 ) {
   const distance = Math.abs(diff);
-  if (distance > 3) return { x: 0, z: -320, rotateY: 0, scale: 0.3, opacity: 0, brightness: 0.2, blur: 5 };
+  if (distance > 3) return { x: 0, z: -320, rotateY: 0, scale: 0.3, opacity: 0 };
 
   if (isMobile) {
     const angleStep = 32;
@@ -115,9 +115,7 @@ function getCoverflowTransform(
     const rotateY = -diff * angleStep;
     const scale = distance === 0 ? 1.15 : distance === 1 ? 0.88 : 0.68;
     const opacity = distance === 0 ? 1 : distance === 1 ? 0.95 : 0.72;
-    const brightness = distance === 0 ? 1.12 : distance === 1 ? 0.92 : 0.70;
-    const blur = distance === 0 ? 0 : distance === 1 ? 0 : 0.8;
-    return { x, z, rotateY, scale, opacity, brightness, blur };
+    return { x, z, rotateY, scale, opacity };
   }
 
   // Progressive curved alignment with increased horizontal dimension
@@ -138,13 +136,7 @@ function getCoverflowTransform(
   const opacities = [1, 0.96, 0.84, 0.65];
   const opacity = opacities[distance];
 
-  const brightnesses = [1.12, 0.96, 0.80, 0.64];
-  const brightness = brightnesses[distance];
-
-  const blurs = [0, 0, 0.6, 1.2];
-  const blur = blurs[distance];
-
-  return { x, z, rotateY, scale, opacity, brightness, blur };
+  return { x, z, rotateY, scale, opacity };
 }
 
 // Pre-computed stable chaos offsets per card index
@@ -336,20 +328,19 @@ export default function Cinematic3DGallery({
         <div className="absolute top-0 left-0 w-[350px] h-[350px] bg-amber-500/6 rounded-full blur-[130px]" />
         <div className="absolute top-0 right-0 w-[350px] h-[350px] bg-teal-500/6 rounded-full blur-[130px]" />
 
-        {/* Floating ambient particle embers */}
+        {/* Floating ambient particle embers (CSS-animated for zero JS overhead) */}
         {AMBIENT_PARTICLES.map((p) => (
-          <motion.div
+          <div
             key={`particle-${p.id}`}
-            initial={{ opacity: 0.2, y: 0 }}
-            animate={{ opacity: [0.25, 0.75, 0.25], y: [-15, 15, -15], x: [-10, 10, -10] }}
-            transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
-            className="absolute rounded-full bg-amber-400/40 pointer-events-none"
+            className="absolute rounded-full bg-amber-400/40 pointer-events-none animate-pulse"
             style={{
               left: `${p.x}%`,
               top: `${p.y}%`,
               width: p.size,
               height: p.size,
-              boxShadow: "0 0 10px rgba(251,191,36,0.6)",
+              boxShadow: "0 0 10px rgba(251,191,36,0.5)",
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
             }}
           />
         ))}
@@ -421,7 +412,7 @@ export default function Cinematic3DGallery({
             if (distance > maxVisible) return null;
 
             const isActive = diff === 0;
-            const { x, z, rotateY, scale, opacity, brightness, blur } =
+            const { x, z, rotateY, scale, opacity } =
               getCoverflowTransform(diff, isMobile, isTablet);
 
             // Per-card chaos offsets for the distorted initial state
@@ -443,7 +434,6 @@ export default function Cinematic3DGallery({
                   rotateZ: chaos.rotateZ,
                   scale: chaos.scale,
                   opacity: 0,
-                  filter: "blur(18px) brightness(0.4)",
                 }}
                 animate={isArranged ? {
                   x,
@@ -453,7 +443,6 @@ export default function Cinematic3DGallery({
                   rotateZ: 0,
                   scale,
                   opacity,
-                  filter: `brightness(${brightness}) blur(${blur}px)`,
                 } : {
                   x: chaos.x * 0.75,
                   y: chaos.y * 0.75,
@@ -462,7 +451,6 @@ export default function Cinematic3DGallery({
                   rotateZ: chaos.rotateZ * 0.65,
                   scale: chaos.scale * 1.5,
                   opacity: 0.85,
-                  filter: "blur(4px) brightness(0.8)",
                 }}
                 transition={isArranged ? (
                   hasArrangedOnce ? {
@@ -475,7 +463,6 @@ export default function Cinematic3DGallery({
                     rotateZ: { duration: navDuration, ease: navEase },
                     scale: { duration: navDuration, ease: navEase },
                     opacity: { duration: 0.5 },
-                    filter: { duration: 0.5 },
                   } : {
                     x: { type: "spring", stiffness: 55, damping: 14, delay: arrangeDelay },
                     y: isActive
@@ -486,7 +473,6 @@ export default function Cinematic3DGallery({
                     rotateZ: { type: "spring", stiffness: 55, damping: 14, delay: arrangeDelay },
                     scale: { type: "spring", stiffness: 55, damping: 14, delay: arrangeDelay },
                     opacity: { duration: 0.7, delay: arrangeDelay },
-                    filter: { duration: 0.8, delay: arrangeDelay },
                   }
                 ) : {
                   duration: 0.25,
