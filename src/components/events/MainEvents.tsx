@@ -17,6 +17,7 @@ import {
   Flame,
   ChevronRight,
 } from "lucide-react";
+import RubberSegment from "../ui/RubberSegment";
 
 export interface FestivalEvent {
   id: string;
@@ -486,20 +487,19 @@ export default function MainEvents() {
             </div>
 
             {/* Day Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-              {DAYS.map((day) => (
-                <button
-                  key={day}
-                  onClick={() => setSelectedDay(day)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-mono uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
-                    selectedDay === day
-                      ? "bg-cyan-500 text-slate-950 font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)]"
-                      : "bg-[#020712] text-slate-300 border border-white/10 hover:border-cyan-400/50 hover:text-white"
-                  }`}
-                >
-                  {day}
-                </button>
-              ))}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none font-mono tracking-wider uppercase">
+              <RubberSegment
+                items={[...DAYS]}
+                value={selectedDay}
+                onChange={(value) => setSelectedDay(value)}
+                trackColor="rgba(2, 7, 18, 0.8)"
+                thumbColor="#22d3ee"
+                textColor="#cbd5e1"
+                activeTextColor="#020712"
+                size="sm"
+                radius={12}
+                equalSlots={false}
+              />
             </div>
           </div>
 

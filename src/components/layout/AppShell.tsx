@@ -178,7 +178,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           {children}
 
           {/* Global Footer */}
-          {pathname !== '/events' && <Footer />}
+          <Footer />
         </div>
       </RocketTransitionProvider>
     </AudioContext.Provider>

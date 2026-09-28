@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Exo_2, Lora, Outfit, Inter, Geist } from "next/font/google";
 import AppShell from "@/components/layout/AppShell";
 import "./globals.css";
@@ -32,6 +32,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "INNOVISION | The Celestial Odyssey",
   description: "Celestial 3D Web Experience",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

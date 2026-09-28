@@ -2,6 +2,7 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 // Dynamically import AccordionGallery to avoid SSR issues with gsap
 const AccordionGallery = dynamic(
@@ -43,6 +44,8 @@ const FUN_EVENTS = [
 ];
 
 export default function FunEvents() {
+  const isMobile = useIsMobile();
+
   return (
     <section className="relative w-full min-h-screen py-24 flex flex-col items-center justify-center overflow-hidden z-20 bg-transparent">
       {/* Header */}
@@ -71,9 +74,10 @@ export default function FunEvents() {
         <AccordionGallery
           items={FUN_EVENTS}
           defaultIndex={2}
-          expandRatio={0.52}
-          trigger="hover"
-          height={480}
+          expandRatio={isMobile ? 0.7 : 0.52}
+          trigger={isMobile ? "click" : "hover"}
+          height={isMobile ? 600 : 480}
+          orientation={isMobile ? "vertical" : "horizontal"}
           accentColor="#e879f9"
           overlayColor="#0a0020"
           grayscale={true}

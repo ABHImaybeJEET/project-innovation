@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import EventCarousel from "@/components/events/EventCarousel";
-import MainEvents from "@/components/events/MainEvents";
+import ScheduleBlock from "@/components/events/ScheduleBlock";
 import FunEvents from "@/components/events/FunEvents";
 
 // Dynamically import the heavy canvas component to avoid blocking initial load
@@ -31,29 +31,41 @@ export default function EventsPage() {
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     let animationFrameId: number;
-    const updateParallax = () => {
-      if (window.innerWidth >= 768) {
-        const m = mouseRef.current;
-        m.currentX += (m.targetX - m.currentX) * 0.08;
-        m.currentY += (m.targetY - m.currentY) * 0.08;
+    let isActive = window.innerWidth >= 768;
 
-        // Apply transforms directly to the DOM to avoid React re-renders
-        if (bgRef.current) {
-          bgRef.current.style.transform = `translate3d(${m.currentX * -12}px, ${m.currentY * -12}px, 0) scale(1.08)`;
-        }
-        if (starsRef.current) {
-          starsRef.current.style.transform = `translate3d(${m.currentX * 6}px, ${m.currentY * 6}px, 0)`;
-        }
-      }
+    const updateParallax = () => {
+      if (!isActive) return;
+      
+      const m = mouseRef.current;
+      m.currentX += (m.targetX - m.currentX) * 0.08;
+      m.currentY += (m.targetY - m.currentY) * 0.08;
+
+      if (bgRef.current) bgRef.current.style.transform = `translate3d(${m.currentX * -12}px, ${m.currentY * -12}px, 0) scale(1.08)`;
+      if (starsRef.current) starsRef.current.style.transform = `translate3d(${m.currentX * 6}px, ${m.currentY * 6}px, 0)`;
 
       animationFrameId = requestAnimationFrame(updateParallax);
     };
 
-    animationFrameId = requestAnimationFrame(updateParallax);
+    if (isActive) {
+      animationFrameId = requestAnimationFrame(updateParallax);
+    }
+
+    const handleResize = () => {
+      const wasActive = isActive;
+      isActive = window.innerWidth >= 768;
+      if (isActive && !wasActive) {
+        animationFrameId = requestAnimationFrame(updateParallax);
+      } else if (!isActive && wasActive) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+    
+    window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
@@ -92,8 +104,8 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* SECTION 2: Main Events */}
-      <MainEvents />
+      {/* SECTION 2: Innovision Schedule */}
+      <ScheduleBlock />
 
       {/* SECTION 3: Fun Events */}
       <FunEvents />

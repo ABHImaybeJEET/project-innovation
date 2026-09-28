@@ -30,36 +30,43 @@ export default function Home() {
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     let animationFrameId: number;
+    let isActive = window.innerWidth >= 768;
+    
     const updateParallax = () => {
-      if (window.innerWidth >= 768) {
-        const m = mouseRef.current;
-        // Lerp for ultra-smooth movement without CSS transition stutter
-        m.currentX += (m.targetX - m.currentX) * 0.08;
-        m.currentY += (m.targetY - m.currentY) * 0.08;
+      if (!isActive) return;
+      
+      const m = mouseRef.current;
+      m.currentX += (m.targetX - m.currentX) * 0.08;
+      m.currentY += (m.targetY - m.currentY) * 0.08;
 
-        // Apply transforms directly to the DOM to avoid React re-renders
-        if (bgRef.current) {
-          bgRef.current.style.transform = `translate3d(${m.currentX * -12}px, ${m.currentY * -12}px, 0) scale(1.08)`;
-        }
-        if (astro1Ref.current) {
-          astro1Ref.current.style.transform = `translate3d(${m.currentX * 42}px, ${m.currentY * 42}px, 0)`;
-        }
-        if (astro2Ref.current) {
-          astro2Ref.current.style.transform = `translate3d(${m.currentX * -38}px, ${m.currentY * -38}px, 0)`;
-        }
-        if (titleRef.current) {
-          titleRef.current.style.transform = `translate3d(${m.currentX * 35}px, ${m.currentY * 35}px, 0)`;
-        }
-      }
+      if (bgRef.current) bgRef.current.style.transform = `translate3d(${m.currentX * -12}px, ${m.currentY * -12}px, 0) scale(1.08)`;
+      if (astro1Ref.current) astro1Ref.current.style.transform = `translate3d(${m.currentX * 42}px, ${m.currentY * 42}px, 0)`;
+      if (astro2Ref.current) astro2Ref.current.style.transform = `translate3d(${m.currentX * -38}px, ${m.currentY * -38}px, 0)`;
+      if (titleRef.current) titleRef.current.style.transform = `translate3d(${m.currentX * 35}px, ${m.currentY * 35}px, 0)`;
 
       animationFrameId = requestAnimationFrame(updateParallax);
     };
 
-    animationFrameId = requestAnimationFrame(updateParallax);
+    if (isActive) {
+      animationFrameId = requestAnimationFrame(updateParallax);
+    }
+
+    const handleResize = () => {
+      const wasActive = isActive;
+      isActive = window.innerWidth >= 768;
+      if (isActive && !wasActive) {
+        animationFrameId = requestAnimationFrame(updateParallax);
+      } else if (!isActive && wasActive) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+    
+    window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
