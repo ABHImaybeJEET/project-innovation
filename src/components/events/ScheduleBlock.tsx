@@ -76,7 +76,7 @@ export default function ScheduleBlock() {
               icon: <Calendar className="w-4 h-4" />
             }))}
             value={activeDay}
-            onChange={(value) => setActiveDay(value)}
+            onChange={(value: string) => setActiveDay(value)}
             trackColor="rgba(255, 255, 255, 0.05)"
             thumbColor="#22d3ee"
             textColor="#94a3b8"

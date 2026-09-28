@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { disposeThreejsObject } from "@/lib/utils/three-dispose";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface ConstellationsCanvasProps {
@@ -496,6 +497,7 @@ export default function ConstellationsCanvas({
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
+      disposeThreejsObject(scene);
       renderer.dispose();
     };
   }, [isMobile]);

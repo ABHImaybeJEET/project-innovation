@@ -12,251 +12,13 @@ import {
   Clock,
   Sparkles,
   X,
-  CheckCircle2,
-  Phone,
   Flame,
   ChevronRight,
 } from "lucide-react";
 import RubberSegment from "../ui/RubberSegment";
+import EventModal from "./EventModal";
 
-export interface FestivalEvent {
-  id: string;
-  title: string;
-  category: "Technical" | "Cultural" | "Gaming" | "Informals" | "Workshops";
-  day: "Day 1" | "Day 2" | "Day 3" | "Day 4";
-  time: string;
-  venue: string;
-  prizePool: string;
-  teamSize: string;
-  image: string;
-  shortDesc: string;
-  fullDesc: string;
-  rules: string[];
-  coordinators: { name: string; phone: string }[];
-  isRegistrationOpen: boolean;
-  featured?: boolean;
-}
-
-const FESTIVAL_EVENTS: FestivalEvent[] = [
-  {
-    id: "hack-sprint",
-    title: "WEB3 & AI INNOVATION SPRINT",
-    category: "Technical",
-    day: "Day 2",
-    time: "10:00 AM - 06:00 PM",
-    venue: "CS Department Lab 3",
-    prizePool: "₹40,000",
-    teamSize: "2 - 4 Members",
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
-    shortDesc: "8-hour rapid prototyping sprint building decentralised apps or autonomous AI agents solving real-world challenges.",
-    fullDesc: "An intense innovation sprint targeting actionable challenges in decentralized data, local LLMs, and student utilities. Mentorship sessions provided by alumni and tech industry leaders.",
-    rules: [
-      "All code must be written within the 8-hour sprint window.",
-      "Open-source libraries and APIs are permitted; pre-built templates are not.",
-      "Final pitch includes a 3-minute live demonstration and 2-minute Q&A.",
-      "GitHub repo with commit history must be submitted for validation.",
-    ],
-    coordinators: [
-      { name: "Arjun Mehta", phone: "+91 95432 10987" },
-      { name: "Neha Gupta", phone: "+91 95432 10988" },
-    ],
-    isRegistrationOpen: true,
-    featured: true,
-  },
-  {
-    id: "lan-gaming",
-    title: "LAN GAMING: VALORANT & BGMI",
-    category: "Gaming",
-    day: "Day 3",
-    time: "10:00 AM - 08:00 PM",
-    venue: "Central Computer Center",
-    prizePool: "₹35,000",
-    teamSize: "5 Members (Valorant) / 4 (BGMI)",
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80",
-    shortDesc: "Compete in adrenaline-pumping esports tournaments. High refresh-rate rigs, low-ping local server, zero compromise.",
-    fullDesc: "The premier collegiate gaming battleground. Teams face off in knockout brackets on tournament-grade PC setups and custom low-latency mobile lobbies with live casting, spectator arena, and hype shoutcasting.",
-    rules: [
-      "Standard competitive tournament rules and map pool apply.",
-      "Any third-party software or exploits lead to instant DQ.",
-      "Players may bring their own mice, keyboards, and headsets.",
-      "Check-in 30 minutes before match start time is mandatory.",
-    ],
-    coordinators: [
-      { name: "Kunal Verma", phone: "+91 99001 23456" },
-      { name: "Devansh Roy", phone: "+91 99001 23457" },
-    ],
-    isRegistrationOpen: true,
-    featured: true,
-  },
-  {
-    id: "robo-soccer",
-    title: "ROBO SOCCER ARENA",
-    category: "Technical",
-    day: "Day 1",
-    time: "01:00 PM - 06:00 PM",
-    venue: "Student Activity Center (SAC Grounds)",
-    prizePool: "₹25,000",
-    teamSize: "2 - 4 Members",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80",
-    shortDesc: "Manual wireless bots clashing in a mini-pitch arena. Dribble, tackle, and strike goals for championship glory.",
-    fullDesc: "Bring your custom wireless bots to the specialized astro-turf arena. Maneuver across obstacles, out-dribble rival machines, and score past opposing defenders in high-speed matches filled with strategic gameplay.",
-    rules: [
-      "Bot dimensions must fit within 30cm x 30cm x 30cm bounding box.",
-      "Maximum bot weight is 5kg (excluding external battery if wired).",
-      "Wireless control frequency must not interfere with standard 2.4GHz bands.",
-      "Matches consist of two 4-minute halves with a 1-minute halftime.",
-    ],
-    coordinators: [
-      { name: "Manish Kumar", phone: "+91 96543 21098" },
-      { name: "Siddharth Roy", phone: "+91 96543 21099" },
-    ],
-    isRegistrationOpen: true,
-  },
-  {
-    id: "tech-quiz",
-    title: "TECH QUIZ SHOWDOWN",
-    category: "Technical",
-    day: "Day 2",
-    time: "02:00 PM - 05:00 PM",
-    venue: "Lecture Hall Complex (LH-2)",
-    prizePool: "₹20,000",
-    teamSize: "1 - 2 Members",
-    image: "/images/tech_quiz.jpg",
-    shortDesc: "Battle of wits testing your knowledge in modern tech, space history, AI revolutions, and engineering trivia.",
-    fullDesc: "A high-octane quiz conducted by renowned quizmasters. Features a written preliminary screening round followed by an on-stage buzzer finale with audiovisual questions, rapid-fire rounds, and risk-reward betting rounds.",
-    rules: [
-      "Preliminary round consists of 25 objective and written questions.",
-      "Top 6 teams advance to the live stage finals.",
-      "Use of electronic gadgets during rounds is strictly forbidden.",
-      "Quizmaster's ruling is final and binding.",
-    ],
-    coordinators: [
-      { name: "Rohan Das", phone: "+91 98123 45678" },
-      { name: "Sneha Nair", phone: "+91 98123 45679" },
-    ],
-    isRegistrationOpen: true,
-  },
-  {
-    id: "treasure-hunt",
-    title: "TREASURE HUNT",
-    category: "Informals",
-    day: "Day 1",
-    time: "11:00 AM - 03:00 PM",
-    venue: "Campus Wide (Starting at SAC)",
-    prizePool: "₹15,000",
-    teamSize: "2 - 4 Members",
-    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
-    shortDesc: "Decode celestial riddles, explore hidden corners of the campus, and race against time to claim the lost artifact.",
-    fullDesc: "The ultimate campus-wide mystery challenge. Teams will receive encrypted clue cards requiring logic, campus trivia, and keen observation. Each checkpoint unlocks a coordinate leading to the grand final treasure vault.",
-    rules: [
-      "All team members must carry valid institute/government ID cards.",
-      "Strictly no motorized vehicles permitted during the hunt.",
-      "Clues must not be damaged or altered at checkpoints.",
-      "Fastest verified team with all checkpoint stamps wins.",
-    ],
-    coordinators: [
-      { name: "Aarav Sharma", phone: "+91 98765 43210" },
-      { name: "Pooja Patel", phone: "+91 98765 43211" },
-    ],
-    isRegistrationOpen: true,
-  },
-  {
-    id: "escape-room",
-    title: "COSMIC ESCAPE ROOM",
-    category: "Informals",
-    day: "Day 3",
-    time: "12:00 PM - 07:00 PM",
-    venue: "Mechanical Workshop Complex",
-    prizePool: "₹15,000",
-    teamSize: "3 - 5 Members",
-    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80",
-    shortDesc: "Trapped in a malfunctioning deep-space station. Solve mechanical locks and laser puzzles within 30 minutes.",
-    fullDesc: "Step into an immersive physical puzzle room equipped with reactive LEDs, pressure plates, cipher decoders, and sound cues. Your crew must work collaboratively under time pressure to reboot the spacecraft reactor before the countdown ends.",
-    rules: [
-      "30 minutes time limit per team.",
-      "No physical damage to room equipment or props is permitted.",
-      "Two clue hints can be requested during the game with a 2-minute penalty.",
-      "Teams are ranked by total escape time and fewer hints taken.",
-    ],
-    coordinators: [
-      { name: "Kartik Soni", phone: "+91 94321 09876" },
-      { name: "Shreya Sen", phone: "+91 94321 09877" },
-    ],
-    isRegistrationOpen: true,
-  },
-  {
-    id: "open-mic",
-    title: "OPEN MIC: CELESTIAL ACOUSTICS",
-    category: "Cultural",
-    day: "Day 4",
-    time: "05:00 PM - 08:30 PM",
-    venue: "Open Air Amphitheatre",
-    prizePool: "₹12,000",
-    teamSize: "Solo / Duo",
-    image: "/images/open_mic.jpg",
-    shortDesc: "An intimate stage under the open night sky for soulful poetry, acoustic jams, standup comedy, and storytelling.",
-    fullDesc: "Step into the spotlight at the open-air amphitheater. Whether you sing original indie tracks, deliver sharp comedic timing, or recite powerful verse, this is your platform to move the audience with your voice.",
-    rules: [
-      "Time limit: Maximum 5 minutes per performance.",
-      "Content must be original and respectful; vulgarity is strictly prohibited.",
-      "Acoustic guitars and basic backing tracks via aux are permitted.",
-      "Pre-registration is required; walk-in slots are subject to availability.",
-    ],
-    coordinators: [
-      { name: "Isha Sen", phone: "+91 97654 32100" },
-      { name: "Tanmay Sen", phone: "+91 97654 32101" },
-    ],
-    isRegistrationOpen: true,
-  },
-  {
-    id: "photo-walks",
-    title: "PHOTO WALKS & PERSPECTIVES",
-    category: "Cultural",
-    day: "Day 2",
-    time: "07:00 AM - 12:00 PM",
-    venue: "Main Campus Grounds & Architecture Complex",
-    prizePool: "₹12,000",
-    teamSize: "Solo",
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80",
-    shortDesc: "Capture raw aesthetics, golden hour shadows, and the pulse of INNOVISION through your camera lens.",
-    fullDesc: "Guided morning photowalk across architectural landmarks and hidden spots of NIT Rourkela. Themes will be revealed on the spot. Entries are judged by professional photographers on composition, storytelling, and lighting.",
-    rules: [
-      "Both DSLR and smartphone photography categories are evaluated.",
-      "Basic color correction is allowed; manipulation/AI generation is disqualified.",
-      "EXIF data must be retained on submitted raw/JPEG files.",
-      "Submission deadline is 2:00 PM on Day 2.",
-    ],
-    coordinators: [
-      { name: "Vikram Rathore", phone: "+91 98321 65490" },
-      { name: "Aditi Rao", phone: "+91 98321 65491" },
-    ],
-    isRegistrationOpen: true,
-  },
-  {
-    id: "stargazing-workshop",
-    title: "STARGAZING & ASTROPHYSICS LAB",
-    category: "Workshops",
-    day: "Day 1",
-    time: "07:30 PM - 10:30 PM",
-    venue: "Terrace Observatory, Main Building",
-    prizePool: "Certificates & Kit",
-    teamSize: "Open for All",
-    image: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800&auto=format&fit=crop&q=80",
-    shortDesc: "Peer into planetary rings and lunar craters through high-powered Cassegrain telescopes guided by astrophysicists.",
-    fullDesc: "An enchanting hands-on astronomy session under the dark skies. Includes astrophotography tips, deep-sky object tracking, and an interactive Q&A session on cosmological frontiers and exoplanet detection.",
-    rules: [
-      "Open to all registered INNOVISION pass holders.",
-      "Entry on first-come-first-serve batch schedule.",
-      "Handle astronomical telescopes and equipment with care.",
-      "Special certificates of participation awarded to attendees.",
-    ],
-    coordinators: [
-      { name: "Dr. K. Swaminathan", phone: "+91 93210 98765" },
-      { name: "Ritika Roy", phone: "+91 93210 98766" },
-    ],
-    isRegistrationOpen: true,
-  },
-];
+import { FESTIVAL_EVENTS, type FestivalEvent } from '@/lib/data/events';
 
 const CATEGORIES = [
   "All",
@@ -382,9 +144,8 @@ export default function MainEvents() {
                 src={spotlightEvent.image}
                 alt={spotlightEvent.title}
                 fill
-                priority
+                sizes="(max-width: 1024px) 100vw, 100vw"
                 className="object-cover object-center opacity-30 group-hover:scale-105 group-hover:opacity-40 transition-all duration-700 filter brightness-75"
-                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#020712] via-[#050d26]/90 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#020712] via-transparent to-transparent" />
@@ -491,7 +252,7 @@ export default function MainEvents() {
               <RubberSegment
                 items={[...DAYS]}
                 value={selectedDay}
-                onChange={(value) => setSelectedDay(value)}
+                onChange={(value: string) => setSelectedDay(value)}
                 trackColor="rgba(2, 7, 18, 0.8)"
                 thumbColor="#22d3ee"
                 textColor="#cbd5e1"
@@ -588,7 +349,6 @@ export default function MainEvents() {
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover group-hover:scale-108 transition-transform duration-700 filter brightness-90 group-hover:brightness-105"
-                        unoptimized={evt.image.startsWith("http")}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#03091e] via-[#03091e]/30 to-black/40" />
 
@@ -665,127 +425,10 @@ export default function MainEvents() {
 
       {/* ── EVENT DETAILS & RULEBOOK MODAL ─────────────────────────────────── */}
       {activeModalEvent && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
-          onClick={() => setActiveModalEvent(null)}
-        >
-          <div
-            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#03091e] border border-cyan-500/40 p-6 sm:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.9)] space-y-6 text-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Close Button */}
-            <button
-              onClick={() => setActiveModalEvent(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer z-10"
-              aria-label="Close modal"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Modal Header */}
-            <div className="space-y-2 pr-8">
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                  {activeModalEvent.category}
-                </span>
-                <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                  {activeModalEvent.day}
-                </span>
-              </div>
-
-              <h3 className="text-2xl sm:text-3xl font-black uppercase text-white font-serif leading-tight">
-                {activeModalEvent.title}
-              </h3>
-            </div>
-
-            {/* Metadata Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs font-mono">
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Prize Pool</span>
-                <span className="font-bold text-emerald-400">{activeModalEvent.prizePool}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Venue</span>
-                <span className="font-semibold text-slate-200">{activeModalEvent.venue}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Time</span>
-                <span className="font-semibold text-slate-200">{activeModalEvent.time}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Team Size</span>
-                <span className="font-semibold text-slate-200">{activeModalEvent.teamSize}</span>
-              </div>
-            </div>
-
-            {/* Full Description */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-mono uppercase tracking-widest text-cyan-300 font-bold">
-                Overview
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
-                {activeModalEvent.fullDesc}
-              </p>
-            </div>
-
-            {/* Rules Checklist */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-mono uppercase tracking-widest text-cyan-300 font-bold">
-                Official Rules & Guidelines
-              </h4>
-              <ul className="space-y-2">
-                {activeModalEvent.rules.map((rule, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                    <span>{rule}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Event Coordinators */}
-            <div className="space-y-3 pt-2 border-t border-white/10">
-              <h4 className="text-xs font-mono uppercase tracking-widest text-slate-400 font-bold">
-                Event Coordinators
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {activeModalEvent.coordinators.map((c, idx) => (
-                  <a
-                    key={idx}
-                    href={`tel:${c.phone}`}
-                    className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 transition-colors"
-                  >
-                    <div>
-                      <p className="text-xs font-bold text-white">{c.name}</p>
-                      <p className="text-[11px] font-mono text-cyan-300">{c.phone}</p>
-                    </div>
-                    <Phone className="w-4 h-4 text-cyan-400" />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Modal Sticky Footer CTA */}
-            <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
-              <button
-                onClick={() => setActiveModalEvent(null)}
-                className="px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition-colors cursor-pointer"
-              >
-                Close
-              </button>
-
-              <Link
-                href="/register"
-                className="px-7 py-2.5 rounded-full text-xs font-black uppercase tracking-wider bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 hover:brightness-110 shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>Register Pass</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        </div>
+        <EventModal
+          event={activeModalEvent}
+          onClose={() => setActiveModalEvent(null)}
+        />
       )}
     </section>
   );

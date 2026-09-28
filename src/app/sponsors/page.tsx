@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { 
   Hexagon, 
@@ -22,6 +19,7 @@ import {
   MoonStar
 } from "lucide-react";
 import "./sponsors.css";
+import MouseParallaxContainer from "@/components/layout/MouseParallaxContainer";
 
 // Sponsor data mapping
 const sponsorCategories = [
@@ -63,54 +61,14 @@ const sponsorCategories = [
 ];
 
 export default function SponsorsPage() {
-  const mouseRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
-  const bgRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      if (innerWidth < 768) return; 
-      const x = (e.clientX / innerWidth - 0.5) * 2;
-      const y = (e.clientY / innerHeight - 0.5) * 2;
-      mouseRef.current.targetX = x;
-      mouseRef.current.targetY = y;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-
-    let animationFrameId: number;
-    const updateParallax = () => {
-      if (window.innerWidth >= 768) {
-        const m = mouseRef.current;
-        m.currentX += (m.targetX - m.currentX) * 0.08;
-        m.currentY += (m.targetY - m.currentY) * 0.08;
-
-        if (bgRef.current) {
-          bgRef.current.style.transform = `translate3d(${m.currentX * -15}px, ${m.currentY * -15}px, 0) scale(1.05)`;
-        }
-        if (contentRef.current) {
-          contentRef.current.style.transform = `translate3d(${m.currentX * 5}px, ${m.currentY * 5}px, 0)`;
-        }
-      }
-      animationFrameId = requestAnimationFrame(updateParallax);
-    };
-
-    animationFrameId = requestAnimationFrame(updateParallax);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
   return (
-    <main className="relative w-full min-h-screen bg-[#020712] overflow-x-hidden pt-24 pb-12 selection:bg-amber-500/30">
+    <MouseParallaxContainer className="relative w-full min-h-screen bg-[#020712] overflow-x-hidden pt-24 pb-12 selection:bg-amber-500/30">
       
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div
-          ref={bgRef}
+          data-parallax="-15"
+          data-parallax-scale="1.05"
           className="absolute -inset-8 will-change-transform"
           style={{ transform: "translate3d(0px, 0px, 0) scale(1.05)" }}
         >
@@ -119,7 +77,7 @@ export default function SponsorsPage() {
             alt="Space Background"
             fill
             priority
-            unoptimized
+            sizes="100vw"
             className="object-cover object-center opacity-80"
           />
           {/* Subtle gradient overlay to ensure text readability */}
@@ -128,7 +86,7 @@ export default function SponsorsPage() {
       </div>
 
       {/* Main Content */}
-      <div ref={contentRef} className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col items-center">
+      <div data-parallax="5" className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col items-center">
         
         {/* Header Section */}
         <div className="text-center mb-0 mt-4 w-full pt-6 pb-2 rounded-3xl">
@@ -221,6 +179,6 @@ export default function SponsorsPage() {
         </div>
 
       </div>
-    </main>
+    </MouseParallaxContainer>
   );
 }
