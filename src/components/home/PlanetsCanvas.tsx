@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { disposeThreejsObject } from "@/lib/utils/three-dispose";
 
 interface PlanetsCanvasProps {
   mouseX?: number;
@@ -190,6 +191,7 @@ export default function PlanetsCanvas({ mouseX = 0, mouseY = 0 }: PlanetsCanvasP
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
+      disposeThreejsObject(scene);
       renderer.dispose();
     };
   }, []);

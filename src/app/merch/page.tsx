@@ -1,6 +1,5 @@
-"use client";
-
 import Image from "next/image";
+import Link from "next/link";
 import ProductCard from "@/components/merch/ProductCard";
 
 const products = [
@@ -44,7 +43,7 @@ export default function MerchPage() {
           alt="Space Background"
           fill
           priority
-          unoptimized
+          sizes="100vw"
           className="object-cover object-center opacity-80"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#020712]/40 via-transparent to-[#020712]/90" />
@@ -91,8 +90,8 @@ export default function MerchPage() {
 
         {/* Order Now Button */}
         <div className="animate-in fade-in slide-in-from-bottom-8 fill-mode-both w-full flex justify-center" style={{ animationDelay: '800ms', animationDuration: '800ms' }}>
-          <button
-            onClick={() => { /* Redirect to form to be implemented later */ }}
+          <Link
+            href="#"
             className="group relative inline-flex items-center justify-center p-1 sm:p-1.5 rounded-full bg-[#020712]/80 border border-[#fbbf24]/30 backdrop-blur-2xl shadow-[0_12px_35px_rgba(0,0,0,0.9)] hover:border-[#fbbf24]/60 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105 active:scale-95 cursor-pointer w-full max-w-md"
           >
             {/* Double-Bezel Inner Core */}
@@ -112,7 +111,7 @@ export default function MerchPage() {
                 <span className="text-[10px] text-[#fbbf24] font-serif drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]">✦</span>
               </div>
             </div>
-          </button>
+          </Link>
         </div>
       </main>
     </div>

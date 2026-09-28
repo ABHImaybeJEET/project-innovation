@@ -302,7 +302,7 @@ export default function StarConstellationCanvas({
       window.removeEventListener("mousemove", onPointerMove);
       window.removeEventListener("mouseleave", onPointerLeave);
     };
-  }, []);
+  }, [isMobile]);
 
   return isMobile ? null : (
     <canvas

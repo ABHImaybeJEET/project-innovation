@@ -1,11 +1,9 @@
 import { verifyTurnstileToken } from "../src/lib/security/turnstile.ts";
-import { checkRateLimit } from "../src/lib/security/rate-limit.ts";
 import {
   generateRegistrationCode,
   generateOpaqueQrPayload,
   isValidOpaqueQrPayload,
 } from "../src/lib/security/ticket-security.ts";
-import { getUserRole, isVolunteerOrAdmin } from "../src/lib/security/roles.ts";
 
 async function runTestSuite() {
   console.log("===============================================================");
@@ -147,7 +145,6 @@ async function runTestSuite() {
     console.log("\nTest 7: Simultaneous Registrations with Atomic Row Locking (FOR UPDATE simulation)");
     let capacity = 3;
     let registered_count = 0;
-    let lockQueue = [];
 
     // Simulate 10 simultaneous registration requests for 3 slots
     const results = await Promise.all(

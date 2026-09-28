@@ -73,6 +73,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    // If the user already saw the intro this session, skip it even on the root page
+    if (!isSubpage && sessionStorage.getItem("intro_seen") === "true") {
+      setTimeout(() => {
+        setShowPreloader(false);
+        setIsActive(true);
+        setRemoveGif(true);
+      }, 0);
+    }
+  }, [isSubpage]);
+
   const handleStart = () => {
     try {
       sessionStorage.setItem("innovision_entered", "true");
@@ -81,6 +92,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }
     setIsActive(true);
     setShowPreloader(false);
+    sessionStorage.setItem("intro_seen", "true");
   };
 
   // 1. Timing mask removal: wait 3s after isActive becomes true
@@ -166,7 +178,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           {children}
 
           {/* Global Footer */}
-          {pathname !== '/events' && <Footer />}
+          <Footer />
         </div>
       </RocketTransitionProvider>
     </AudioContext.Provider>

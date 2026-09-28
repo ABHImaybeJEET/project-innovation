@@ -295,7 +295,7 @@ export default function CosmicCometSystem() {
       });
       if (animFrameId) cancelAnimationFrame(animFrameId);
     };
-  }, []);
+  }, [isMobile]);
 
   return isMobile ? null : (
     <canvas

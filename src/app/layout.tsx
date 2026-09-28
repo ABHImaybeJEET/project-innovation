@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
-import { Exo_2, Lora, Outfit, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Exo_2, Lora, Outfit, Inter, Geist } from "next/font/google";
 import AppShell from "@/components/layout/AppShell";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const exo2 = Exo_2({
   variable: "--font-exo2",
@@ -31,6 +34,13 @@ export const metadata: Metadata = {
   description: "Celestial 3D Web Experience",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,7 +49,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${exo2.variable} ${lora.variable} ${outfit.variable} ${inter.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", exo2.variable, lora.variable, outfit.variable, inter.variable, "font-sans", geist.variable)}
     >
       <body className={`${lora.className} min-h-full flex flex-col bg-[#020712] text-white`}>
         <AppShell>{children}</AppShell>
