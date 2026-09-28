@@ -57,7 +57,7 @@ export default function EventsPage() {
   }, []);
 
   return (
-    <main className="hero-bg relative w-full min-h-screen bg-[#020712] text-white">
+    <main className="hero-bg relative w-full min-h-screen bg-[#020712] text-white scroll-smooth">
       {/* --- FIXED CONTINUOUS BACKGROUND --- */}
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
         {/* 1. Deep Space Background - Subtle smooth reverse parallax */}

@@ -1,61 +1,56 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 
 export default function FloatingAstronauts() {
-  const [mounted, setMounted] = useState(false);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const ufoRef = useRef<HTMLDivElement>(null);
+  const astroRef = useRef<HTMLDivElement>(null);
+  const mouseRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
 
     const handleMouseMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
-      const y = (e.clientY / innerHeight - 0.5) * 2;
-      setMouseOffset({ x, y });
+      if (innerWidth < 768) return;
+      mouseRef.current.targetX = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
+      mouseRef.current.targetY = (e.clientY / innerHeight - 0.5) * 2;
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
-  if (!mounted) return null;
+    let animationFrameId: number;
+    const updateTransforms = () => {
+      const m = mouseRef.current;
+      m.currentX += (m.targetX - m.currentX) * 0.08;
+      m.currentY += (m.targetY - m.currentY) * 0.08;
+
+      if (ufoRef.current) {
+        ufoRef.current.style.transform = `translate3d(${m.currentX * -18}px, ${m.currentY * -14}px, 0)`;
+      }
+      if (astroRef.current) {
+        astroRef.current.style.transform = `translate3d(${m.currentX * 16}px, ${m.currentY * 14}px, 0)`;
+      }
+
+      animationFrameId = requestAnimationFrame(updateTransforms);
+    };
+
+    animationFrameId = requestAnimationFrame(updateTransforms);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-25 overflow-hidden select-none">
       {/* 1. LEFT FLOATING UFO SPACESHIP (Top on Mobile) */}
-      <motion.div
-        initial={{ opacity: 0, x: -60, scale: 0.9 }}
-        animate={{
-          opacity: 1,
-          x: mouseOffset.x * -18,
-          y: mouseOffset.y * -14,
-          scale: 1,
-        }}
-        transition={{
-          opacity: { duration: 1.2, ease: "easeOut" },
-          scale: { duration: 1.2, ease: "easeOut" },
-          x: { duration: 0.6, ease: "easeOut" },
-          y: { duration: 0.6, ease: "easeOut" },
-        }}
-        className="absolute left-1/2 sm:left-[3%] lg:left-[4%] xl:left-[6%] top-[16%] sm:top-[32%] lg:top-[36%] -translate-x-1/2 sm:translate-x-0 sm:-translate-y-1/2 w-[140px] sm:w-[190px] md:w-[230px] lg:w-[275px] xl:w-[315px] aspect-[1501/871]"
+      <div
+        ref={ufoRef}
+        className="absolute left-1/2 sm:left-[3%] lg:left-[4%] xl:left-[6%] top-[16%] sm:top-[32%] lg:top-[36%] -translate-x-1/2 sm:translate-x-0 sm:-translate-y-1/2 w-[140px] sm:w-[190px] md:w-[230px] lg:w-[275px] xl:w-[315px] aspect-[1501/871] will-change-transform transition-opacity duration-700"
       >
-        <motion.div
-          animate={{
-            y: [-10, 14, -10],
-            rotate: [-2, 2.5, -2],
-          }}
-          transition={{
-            duration: 6.8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="relative w-full h-full filter drop-shadow-[0_0_30px_rgba(251,191,36,0.45)] drop-shadow-[0_0_60px_rgba(56,189,248,0.25)]"
-        >
+        <div className="relative w-full h-full filter drop-shadow-[0_0_30px_rgba(251,191,36,0.45)] drop-shadow-[0_0_60px_rgba(56,189,248,0.25)] animate-float-slow">
           <Image
             src="/ufo.png"
             alt="Alien UFO Spaceship Floating in Deep Space"
@@ -64,38 +59,15 @@ export default function FloatingAstronauts() {
             sizes="(max-width: 768px) 190px, (max-width: 1200px) 275px, 315px"
             className="object-contain"
           />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* 2. RIGHT WAVING ASTRONAUT (Bottom on Mobile) */}
-      <motion.div
-        initial={{ opacity: 0, x: 60, scale: 0.9 }}
-        animate={{
-          opacity: 1,
-          x: mouseOffset.x * 16,
-          y: mouseOffset.y * 14,
-          scale: 1,
-        }}
-        transition={{
-          opacity: { duration: 1.2, ease: "easeOut" },
-          scale: { duration: 1.2, ease: "easeOut" },
-          x: { duration: 0.6, ease: "easeOut" },
-          y: { duration: 0.6, ease: "easeOut" },
-        }}
-        className="absolute left-1/2 sm:left-auto right-auto sm:right-[3%] lg:right-[5%] xl:right-[7%] top-auto sm:top-[31%] lg:top-[33%] bottom-[8%] sm:bottom-auto -translate-x-1/2 sm:translate-x-0 sm:-translate-y-1/2 w-[100px] sm:w-[135px] md:w-[165px] lg:w-[195px] xl:w-[225px] aspect-[402/509]"
+      <div
+        ref={astroRef}
+        className="absolute left-1/2 sm:left-auto right-auto sm:right-[3%] lg:right-[5%] xl:right-[7%] top-auto sm:top-[31%] lg:top-[33%] bottom-[8%] sm:bottom-auto -translate-x-1/2 sm:translate-x-0 sm:-translate-y-1/2 w-[100px] sm:w-[135px] md:w-[165px] lg:w-[195px] xl:w-[225px] aspect-[402/509] will-change-transform transition-opacity duration-700"
       >
-        <motion.div
-          animate={{
-            y: [16, -14, 16],
-            rotate: [2.5, -2.5, 2.5],
-          }}
-          transition={{
-            duration: 7.2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="relative w-full h-full filter drop-shadow-[0_0_35px_rgba(56,189,248,0.35)] drop-shadow-[0_0_70px_rgba(251,191,36,0.2)]"
-        >
+        <div className="relative w-full h-full filter drop-shadow-[0_0_35px_rgba(56,189,248,0.35)] drop-shadow-[0_0_70px_rgba(251,191,36,0.2)] animate-float-reverse">
           <Image
             src="/astronaut-waving.png"
             alt="Cosmic Astronaut Waving in Space"
@@ -104,8 +76,8 @@ export default function FloatingAstronauts() {
             sizes="(max-width: 768px) 100px, (max-width: 1200px) 195px, 225px"
             className="object-contain"
           />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

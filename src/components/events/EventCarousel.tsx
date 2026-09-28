@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const EventGlobe = dynamic(() => import("./EventGlobe"), { ssr: false });
 
@@ -57,15 +58,15 @@ const slideVariants = {
   }),
 };
 
-
 export default function EventCarousel({ isActive = true }: { isActive?: boolean }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const isScrollingRef = React.useRef(false);
 
-  // Fade out effect for the planet as user scrolls down
-  const { scrollY } = useScroll();
-  const globeOpacity = useTransform(scrollY, [0, 500], [1, 0]);
+  // Mobile Touch Swipe detection
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  const minSwipeDistance = 45;
 
   const currentEvent = EVENTS[currentIndex];
 
@@ -77,6 +78,25 @@ export default function EventCarousel({ isActive = true }: { isActive?: boolean 
       if (next >= EVENTS.length) return 0;
       return next;
     });
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEndX(null);
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    const distance = touchStartX - touchEndX;
+    if (distance > minSwipeDistance) {
+      paginate(1); // Swiped Left -> go to Next
+    } else if (distance < -minSwipeDistance) {
+      paginate(-1); // Swiped Right -> go to Prev
+    }
   };
 
   React.useEffect(() => {
@@ -103,19 +123,27 @@ export default function EventCarousel({ isActive = true }: { isActive?: boolean 
     };
   }, [isActive, currentIndex]);
 
+  const handleScrollDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const target = document.getElementById("all-events");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div 
-      className="relative h-screen w-full text-white flex flex-col selection:bg-white/30 bg-transparent select-none"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="relative h-screen w-full text-white flex flex-col selection:bg-white/30 bg-transparent select-none overflow-hidden touch-pan-y"
       style={{ fontFamily: "var(--font-inter), sans-serif" }}
     >
       
-      {/* ===== 3D PLANET CAROUSEL (Background Layer) ===== */}
-      <motion.div 
-        style={{ opacity: globeOpacity }}
-        className="fixed inset-0 w-full h-screen z-10 pointer-events-none"
-      >
+      {/* ===== 3D PLANET CAROUSEL (Background Layer - scrolls naturally with section) ===== */}
+      <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
         <EventGlobe textures={textures} currentIndex={currentIndex} className="w-full h-full pointer-events-auto" />
-      </motion.div>
+      </div>
 
       {/* ===== MAIN CONTENT ===== */}
       <main className="flex-grow flex flex-col items-center justify-start pt-[14vh] md:pt-[18vh] relative z-20 px-4 pointer-events-none">
@@ -145,22 +173,81 @@ export default function EventCarousel({ isActive = true }: { isActive?: boolean 
             <div className="w-12 h-[2px] bg-cyan-400 mb-6" />
 
             {/* Description */}
-            <p className="text-sm md:text-base leading-relaxed text-slate-100/90 max-w-xl mx-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] mb-8" style={{ fontFamily: "var(--font-lora), serif" }}>
+            <p className="text-sm md:text-base leading-relaxed text-slate-100/90 max-w-xl mx-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] mb-6" style={{ fontFamily: "var(--font-lora), serif" }}>
               {currentEvent.description}
             </p>
             
-            {/* CTA Button */}
-            <button className="border border-cyan-400/60 text-white px-10 py-3 rounded-full font-bold text-[10px] md:text-xs tracking-[0.28em] hover:bg-cyan-300 hover:text-slate-950 transition-all duration-300 backdrop-blur-sm shadow-[0_0_20px_rgba(34,211,238,0.18)]" style={{ fontFamily: "var(--font-exo2), sans-serif" }}>
-              GET STARTED
-            </button>
+            {/* Actions & Navigation Controls Row */}
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2">
+              {/* Prev Button */}
+              <button
+                type="button"
+                onClick={() => paginate(-1)}
+                aria-label={`Previous: ${currentEvent.prevLabel}`}
+                className="w-10 h-10 rounded-full bg-slate-950/70 border border-cyan-400/40 hover:border-cyan-300 hover:bg-cyan-500/20 text-cyan-300 hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 shadow-[0_0_15px_rgba(6,182,212,0.25)] cursor-pointer"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+
+              {/* Main CTA Pass Button */}
+              <Link 
+                href="/register"
+                className="px-8 sm:px-10 py-3 rounded-full bg-cyan-500/10 border border-cyan-400/60 text-white font-bold text-[10px] md:text-xs tracking-[0.28em] hover:bg-cyan-400 hover:text-slate-950 transition-all duration-300 backdrop-blur-sm shadow-[0_0_20px_rgba(34,211,238,0.25)]" 
+                style={{ fontFamily: "var(--font-exo2), sans-serif" }}
+              >
+                REGISTER FOR PASS
+              </Link>
+
+              {/* Next Button */}
+              <button
+                type="button"
+                onClick={() => paginate(1)}
+                aria-label={`Next: ${currentEvent.nextLabel}`}
+                className="w-10 h-10 rounded-full bg-slate-950/70 border border-cyan-400/40 hover:border-cyan-300 hover:bg-cyan-500/20 text-cyan-300 hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 shadow-[0_0_15px_rgba(6,182,212,0.25)] cursor-pointer"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Pagination Indicators & Counter */}
+            <div className="flex items-center gap-2 mt-4">
+              {EVENTS.map((evt, idx) => (
+                <button
+                  key={evt.id}
+                  onClick={() => {
+                    setDirection(idx > currentIndex ? 1 : -1);
+                    setCurrentIndex(idx);
+                  }}
+                  aria-label={`Go to ${evt.title}`}
+                  className={`transition-all duration-300 rounded-full cursor-pointer ${
+                    idx === currentIndex
+                      ? "w-6 h-1.5 bg-gradient-to-r from-cyan-400 to-teal-300 shadow-[0_0_10px_rgba(34,211,238,0.8)]"
+                      : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"
+                  }`}
+                />
+              ))}
+              <span className="text-[10px] font-mono tracking-widest text-cyan-300/80 ml-2">
+                0{currentIndex + 1} / 0{EVENTS.length}
+              </span>
+            </div>
           </motion.div>
         </AnimatePresence>
       </main>
 
-      {/* Down Arrow */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 animate-bounce pointer-events-none">
-        <ChevronDown className="w-6 h-6 text-gray-400" />
-      </div>
+      {/* Down Scroll Indicator to All Events */}
+      <button 
+        onClick={handleScrollDown}
+        className="absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-300 transition-colors pointer-events-auto cursor-pointer group"
+        aria-label="Scroll to explore all festival events"
+      >
+        <span className="text-[10px] font-mono tracking-widest uppercase opacity-70 group-hover:opacity-100 transition-opacity">
+          EXPLORE ALL EVENTS
+        </span>
+        <ChevronDown className="w-4 h-4 animate-bounce" />
+      </button>
+
+      {/* Smooth Soft Vignette at base of hero section */}
+      <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-b from-transparent to-[#020712] pointer-events-none z-20" />
     </div>
   );
 }
